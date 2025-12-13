@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Diario de Viaje - Ver todos los días</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    :root{--nav-bg:#222;--nav-color:#fff;--accent:#f39c12}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f7f7f7}
+    .topbar{position:sticky;top:0;z-index:1000;background:var(--nav-bg);color:var(--nav-color);padding:10px 16px;display:flex;align-items:center;gap:12px}
+    .topbar .title{font-weight:700}
+    .topbar .days{display:flex;gap:6px;flex-wrap:wrap;overflow:auto}
+    .topbar a{color:var(--nav-color);text-decoration:none;padding:6px 10px;border-radius:6px;background:transparent;border:1px solid rgba(255,255,255,0.06)}
+    .topbar a:hover{background:rgba(255,255,255,0.06)}
+    .container{max-width:1200px;margin:20px auto;padding:0 12px}
+    .day-section{margin-bottom:28px;border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 8px 30px rgba(0,0,0,0.06)}
+    .day-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:linear-gradient(90deg,#fff,#f8f8f8);border-bottom:1px solid #eee}
+    .day-header h2{margin:0;font-size:1.05rem}
+    .frame-wrap{width:100%;height:900px}
+    .day-frame{width:100%;height:100%;border:0}
+    .note{font-size:0.95rem;color:#666}
+    @media (max-width:900px){.frame-wrap{height:1200px}}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="title">Diario de Viaje — Ver todos los días</div>
+    <div style="flex:1"></div>
+    <nav class="days" aria-label="Ir a día">
+      <!-- Enlaces rápidos; si falta algún dia la ancla seguirá funcionando -->
+      <a href="#day-1">Día 1</a>
+      <a href="#day-2">Día 2</a>
+      <a href="#day-3">Día 3</a>
+      <a href="#day-4">Día 4</a>
+      <a href="#day-5">Día 5</a>
+      <a href="#day-6">Día 6</a>
+      <a href="#day-7">Día 7</a>
+      <a href="#day-8">Día 8</a>
+      <a href="#day-9">Día 9</a>
+      <a href="#day-10">Día 10</a>
+      <a href="#day-11">Día 11</a>
+      <a href="#day-12">Día 12</a>
+      <a href="#day-13">Día 13</a>
+      <a href="#day-14">Día 14</a>
+      <a href="#day-15">Día 15</a>
+      <a href="#day-16">Día 16</a>
+      <a href="#day-17">Día 17</a>
+      <a href="#day-18">Día 18</a>
+      <a href="#day-19">Día 19</a>
+    </nav>
+  </div>
+
+  <main class="container">
+    <!-- Generar secciones para cada día. Los iframes apuntan a las rutas relativas: dias/X/diaX.html -->
+    <!-- Si algún archivo no existe el iframe mostrará error del navegador, pero la navegación por scroll funciona igual -->
+
+    <!-- Día 1 -->
+    <section id="day-1" class="day-section">
+      <div class="day-header"><h2>✈️ Día 1 — Tarragona → Buenos Aires</h2><div class="note">Cargar: dias/1/dia1.html</div></div>
+      <div class="frame-wrap"><iframe class="day-frame" src="dias/1/dia1.html" title="Día 1"></iframe></div>
+    </section>
+
+    <!-- Día 2 -->
+    <section id="day-2" class="day-section">
+      <div class="day-header"><h2>🌍 Día 2</h2><div class="note">Cargar: dias/2/dia2.html</div></div>
+      <div class="frame-wrap"><iframe class="day-frame" src="dias/2/dia2.html" title="Día 2"></iframe></div>
+    </section>
+
+    <!-- Día 3 -->
+    <section id="day-3" class="day-section">
+      <div class="day-header"><h2>🌲 Día 3 — Tierra del Fuego</h2><div class="note">Cargar: dias/3/dia3.html</div></div>
+      <div class="frame-wrap"><iframe class="day-frame" src="dias/3/dia3.html" title="Día 3"></iframe></div>
+    </section>
+
+    <!-- Día 4 -->
+    <section id="day-4" class="day-section">
+      <div class="day-header"><h2>...</h2><div class="note">Cargar: dias/4/dia4.html</div></div>
+      <div class="frame-wrap"><iframe class="day-frame" src="dias/4/dia4.html" title="Día 4"></iframe></div>
+    </section>
+
+    <!-- Día 5 -->
+    <section id="day-5" class="day-section">
+      <div class="day-header"><h2>...</h2><div class="note">Cargar: dias/5/dia5.html</div></div>
+      <div class="frame-wrap"><iframe class="day-frame" src="dias/5/dia5.html" title="Día 5"></iframe></div>
+    </section>
+
+    <!-- Día 6 -->
+    <section id="day-6" class="day-section">
+      <div class="day-header"><h2>...</h2><div class="note">Cargar: dias/6/dia6.html</div></div>
+      <div class="frame-wrap"><iframe class="day-frame" src="dias/6/dia6.html" title="Día 6"></iframe></div>
+    </section>
+
+    <!-- Día 7 -->
+    <section id="day-7" class="day-section">
+      <div class="day-header"><h2>🐴 Día 7 — Cabalgata</h2><div class="note">Cargar: dias/7/dia7.html</div></div>
+      <div class="frame-wrap"><iframe class="day-frame" src="dias/7/dia7.html" title="Día 7"></iframe></div>
+    </section>
+
+    <!-- Día 8 -->
+    <section id="day-8" class="day-section">
+      <div class="day-header"><h2>...</h2><div class="note">Cargar: dias/8/dia8.html</div></div>
+      <div class="frame-wrap"><iframe class="day-frame" src="dias/8/dia8.html" title="Día 8"></iframe></div>
+    </section>
+
+    <!-- Día 9 -->
+    <section id="day-9" class="day-section">
+      <div class="day-header"><h2>🌆 Día 9 — Buenos Aires</h2><div class="note">Cargar: dias/9/dia9.html</div></div>
+      <div class="frame-wrap"><iframe class="day-frame" src="dias/9/dia9.html" title="Día 9"></iframe></div>
+    </section>
+
+    <!-- Día 10 -->
+    <section id="day-10" class="day-section">
+      <div class="day-header"><h2>...</h2><div class="note">Cargar: dias/10/dia10.html</div></div>
+      <div class="frame-wrap"><iframe class="day-frame" src="dias/10/dia10.html" title="Día 10"></iframe></div>
+    </section>
+
+    <!-- Día 11 -->
+    <section id="day-11" class="day-section">
+      <div class="day-header"><h2>...</h2><div class="note">Cargar: dias/11/dia11.html</div></div>
+      <div class="frame-wrap"><iframe class="day-frame" src="dias/11/dia11.html" title="Día 11"></iframe></div>
+    </section>
+
+    <!-- Día 12 -->
+    <section id="day-12" class="day-section">
+      <div class="day-header"><h2>...</h2><div class="note">Cargar: dias/12/dia12.html</div></div>
+      <div class="frame-wrap"><iframe class="day-frame" src="dias/12/dia12.html" title="Día 12"></iframe></div>
+    </section>
+
+    <!-- Día 13 -->
+    <section id="day-13" class="day-section">
+      <div class="day-header"><h2>...</h2><div class="note">Cargar: dias/13/dia13.html</div></div>
+      <div class="frame-wrap"><iframe class="day-frame" src="dias/13/dia13.html" title="Día 13"></iframe></div>
+    </section>
+
+    <!-- Día 14 -->
+    <section id="day-14" class="day-section">
+      <div class="day-header"><h2>...</h2><div class="note">Cargar: dias/14/dia14.html</div></div>
+      <div class="frame-wrap"><iframe class="day-frame" src="dias/14/dia14.html" title="Día 14"></iframe></div>
+    </section>
+
+    <!-- Día 15 -->
+    <section id="day-15" class="day-section">
+      <div class="day-header"><h2>...</h2><div class="note">Cargar: dias/15/dia15.html</div></div>
+      <div class="frame-wrap"><iframe class="day-frame" src="dias/15/dia15.html" title="Día 15"></iframe></div>
+    </section>
+
+    <!-- Día 16 -->
+    <section id="day-16" class="day-section">
+      <div class="day-header"><h2>🏘️ Día 16 — Paraty</h2><div class="note">Cargar: dias/16/dia16.html</div></div>
+      <div class="frame-wrap"><iframe class="day-frame" src="dias/16/dia16.html" title="Día 16"></iframe></div>
+    </section>
+
+    <!-- Día 17 -->
+    <section id="day-17" class="day-section">
+      <div class="day-header"><h2>...</h2><div class="note">Cargar: dias/17/dia17.html</div></div>
+      <div class="frame-wrap"><iframe class="day-frame" src="dias/17/dia17.html" title="Día 17"></iframe></div>
+    </section>
+
+    <!-- Día 18 -->
+    <section id="day-18" class="day-section">
+      <div class="day-header"><h2>🚙 Día 18 — Paraty</h2><div class="note">Cargar: dias/18/dia18.html</div></div>
+      <div class="frame-wrap"><iframe class="day-frame" src="dias/18/dia18.html" title="Día 18"></iframe></div>
+    </section>
+
+    <!-- Día 19 -->
+    <section id="day-19" class="day-section">
+      <div class="day-header"><h2>...</h2><div class="note">Cargar: dias/19/dia19.html</div></div>
+      <div class="frame-wrap"><iframe class="day-frame" src="dias/19/dia19.html" title="Día 19"></iframe></div>
+    </section>
+
+  </main>
+
+  <script>
+    // Mejor experiencia: permitir abrir el iframe en nueva pestaña al hacer clic en el header
+    document.querySelectorAll('.day-header').forEach(h => {
+      h.addEventListener('dblclick', () => {
+        const note = h.querySelector('.note');
+        if(!note) return;
+        const src = note.textContent.replace('Cargar:','').trim();
+        if(src) window.open(src, '_blank');
+      });
+    });
+  </script>
+</body>
+</html>

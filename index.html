@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diario de Viaje - Argentina y Brasil 2024</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Lato:wght@300;400;700&family=Dancing+Script:wght@700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,138.7C960,139,1056,117,1152,101.3C1248,85,1344,75,1392,69.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            animation: wave 20s linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes wave {
+            0% {
+                transform: translateX(0) translateY(0);
+            }
+
+            100% {
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .hero-content {
+            text-align: center;
+            color: white;
+            z-index: 2;
+            padding: 20px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 5em;
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-flags {
+            font-size: 4em;
+            margin-bottom: 40px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: scrollBounce 2s ease-in-out infinite;
+            cursor: pointer;
+            color: white;
+            font-size: 2em;
+        }
+
+        @keyframes scrollBounce {
+
+            0%,
+            100% {
+                transform: translateX(-50%) translateY(0);
+            }
+
+            50% {
+                transform: translateX(-50%) translateY(10px);
+            }
+        }
+
+        /* Days Grid Section */
+        .days-section {
+            min-height: 100vh;
+            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 80px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5em;
+            color: #2d3436;
+            margin-bottom: 20px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.3em;
+            color: #636e72;
+            margin-bottom: 60px;
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .day-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .day-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .day-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .day-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .day-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 3em;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .day-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8em;
+            color: #2d3436;
+            margin-bottom: 15px;
+        }
+
+        .day-description {
+            color: #636e72;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .day-icon {
+            font-size: 3em;
+            position: absolute;
+            right: 30px;
+            top: 30px;
+            opacity: 0.2;
+        }
+
+        .day-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        /* Navigation Modal */
+        .nav-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nav-modal.active {
+            display: flex;
+        }
+
+        .nav-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .nav-content h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .nav-btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2em;
+            cursor: pointer;
+            color: #636e72;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 80px 20px;
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 4em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        /* Footer */
+        .footer {
+            background: #2d3436;
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .footer p {
+            margin: 10px 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3em;
+            }
+
+            .hero-subtitle {
+                font-size: 1.5em;
+            }
+
+            .section-title {
+                font-size: 2.5em;
+            }
+
+            .days-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-flags">🇦🇷 ✈️ 🇧🇷</div>
+            <h1 class="hero-title">Nuestro Viaje</h1>
+            <p class="hero-subtitle">Argentina y Brasil 2024</p>
+            <p style="font-size: 1.3em; margin-bottom: 20px;">Un diario de aventuras, recuerdos y experiencias
+                inolvidables</p>
+        </div>
+        <div class="scroll-indicator"
+            onclick="document.querySelector('.days-section').scrollIntoView({behavior: 'smooth'})">
+            ⬇️
+        </div>
+    </section>
+
+    <!-- Days Section -->
+    <section class="days-section">
+        <div class="container">
+            <h2 class="section-title">📖 Días del Viaje</h2>
+            <p class="section-subtitle">Haz clic en cualquier día para comenzar tu lectura</p>
+
+            <div class="days-grid">
+                <!-- Día 1 -->
+                <div class="day-card" onclick="window.location.href='./dias/1/dia1.html'">
+                    <div class="day-icon">✈️</div>
+                    <div class="day-number">Día 1</div>
+                    <h3 class="day-title">El Comienzo de la Aventura</h3>
+                    <p class="day-description">
+                        Salimos de Tarragona rumbo a Buenos Aires. 14 horas de vuelo, películas, snacks y la primera
+                        pizza argentina en Güerrin.
+                    </p>
+                    <span class="day-badge">Tarragona → Buenos Aires</span>
+                </div>
+
+                <!-- Día 2 -->
+                <div class="day-card" onclick="window.location.href='./dias/2/dia2.html'">
+                    <div class="day-icon">🏔️</div>
+                    <div class="day-number">Día 2</div>
+                    <h3 class="day-title">Rumbo al Fin del Mundo</h3>
+                    <p class="day-description">
+                        Volamos a Ushuaia, la ciudad más austral del mundo. Bifecitos, un perro que nos adoptó y cerveza
+                        de miel en La Cabaña.
+                    </p>
+                    <span class="day-badge">Buenos Aires → Ushuaia</span>
+                </div>
+
+                <!-- Día 3 -->
+                <div class="day-card" onclick="window.location.href='./dias/3/dia3.html'">
+                    <div class="day-icon">🌲</div>
+                    <div class="day-number">Día 3</div>
+                    <h3 class="day-title">Tierra del Fuego</h3>
+                    <p class="day-description">
+                        Parque Nacional Tierra del Fuego, navegación por el Canal Beagle y cordero a la estaca.
+                    </p>
+                    <span class="day-badge">Ushuaia → Tierra del Fuego</span>
+                </div>
+
+                <!-- Día 4 -->
+                <div class="day-card" onclick="window.location.href='./dias/4/dia4.html'">
+                    <div class="day-icon">🚙</div>
+                    <div class="day-number">Día 4</div>
+                    <h3 class="day-title">Excursión 4x4 - Aventura en la Naturaleza</h3>
+                    <p class="day-description">
+                        Aventura y Asado en la Naturaleza
+                    </p>
+                    <span class="day-badge">Ushuaia</span>
+                </div>
+
+                <!-- Día 5 -->
+                <div class="day-card" onclick="window.location.href='dia5.html'">
+                    <div class="day-icon">❄️</div>
+                    <div class="day-number">Día 5</div>
+                    <h3 class="day-title">Lago Esmeralda y El Calafate</h3>
+                    <p class="day-description">
+                        Caminata al lago congelado, vuelo a El Calafate y el mejor hotel del viaje con spa incluido.
+                    </p>
+                    <span class="day-badge">Ushuaia → El Calafate</span>
+                </div>
+
+                <!-- Día 6 -->
+                <div class="day-card" onclick="window.location.href='./dias/6/dia6.html'">
+                    <div class="day-icon">🏞️</div>
+                    <div class="day-number">Día 6</div>
+                    <h3 class="day-title">Córdoba: Naturaleza y Aventura</h3>
+                    <p class="day-description">
+                        Cascadas, trekking, naturaleza salvaje y encuentros con la fauna cordobesa. Una aventura en el
+                        corazón verde de Argentina.
+                    </p>
+                    <span class="day-badge">Córdoba - Naturaleza</span>
+                </div>
+
+                <!-- Día 7 -->
+                <div class="day-card" onclick="window.location.href='./dias/7/dia7.html'">
+                    <div class="day-icon">🐴</div>
+                    <div class="day-number">Día 7</div>
+                    <h3 class="day-title">Cabalgata en la Tormenta</h3>
+                    <p class="day-description">
+                        Paseo a caballo en Cerro Frías bajo lluvia y aguanieve. Una experiencia extrema de
+                        supervivencia, cabaña acogedora y cena en La Zorra.
+                    </p>
+                    <span class="day-badge">Cerro Frías - El Calafate</span>
+                </div>
+
+                <!-- Día 8 -->
+                <div class="day-card" onclick="window.location.href='./dias/8/dia8.html'">
+                    <div class="day-icon">✈️</div>
+                    <div class="day-number">Día 8</div>
+                    <h3 class="day-title">Cambio de Rumbo</h3>
+                    <p class="day-description">
+                        Check-out, billar, vuelo de 3.5 horas y llegada a un nuevo destino. Cena decepcionante pero
+                        nuevas aventuras por venir.
+                    </p>
+                    <span class="day-badge">Nuevo Destino</span>
+                </div>
+
+                <!-- Día 9 -->
+                <div class="day-card" onclick="window.location.href='./dias/9/dia9.html'">
+                    <div class="day-icon">🌆</div>
+                    <div class="day-number">Día 9</div>
+                    <h3 class="day-title">La Gran Experiencia de Buenos Aires</h3>
+                    <p class="day-description">
+                        City tour completo: Plaza de Mayo, Caminito, Jardín Japonés, Parque 3 de Febrero, Librería El
+                        Ateneo y cena en Bar Pippo Paraná.
+                    </p>
+                    <span class="day-badge">Buenos Aires - Cultura Pura</span>
+                </div>
+
+                <!-- Día 10 -->
+                <div class="day-card" onclick="window.location.href='./dias/10/dia10.html'">
+                    <div class="day-icon">🦎</div>
+                    <div class="day-number">Día 10</div>
+                    <h3 class="day-title">Buenos Aires Aventurera</h3>
+                    <p class="day-description">
+                        Ecoparque de Puerto Madero, encuentros con fauna local, Mercado de San Telmo, Calle Florida y
+                        Galerías Pacífico. Un día de aventura urbana.
+                    </p>
+                    <span class="day-badge">Buenos Aires - Naturaleza y Comercio</span>
+                </div>
+
+                <!-- Día 11 -->
+                <div class="day-card" onclick="window.location.href='./dias/11/dia11.html'">
+                    <div class="day-icon">✈️</div>
+                    <div class="day-number">Día 11</div>
+                    <h3 class="day-title">Último Día en Buenos Aires</h3>
+                    <p class="day-description">
+                        Desayuno relajado, exploración del metro, lectura en cafés y vuelo hacia Iguazú. Fin de una
+                        etapa, inicio de otra.
+                    </p>
+                    <span class="day-badge">Buenos Aires → Iguazú</span>
+                </div>
+
+                <!-- Día 12 -->
+                <div class="day-card" onclick="window.location.href='./dias/12/dia12.html'">
+                    <div class="day-icon">💧</div>
+                    <div class="day-number">Día 12</div>
+                    <h3 class="day-title">Las Majestuosas Cataratas de Iguazú</h3>
+                    <p class="day-description">
+                        Parque Nacional de Iguazú, Garganta del Diablo, excursión en barcas empapante, fauna silvestre y
+                        el delicioso pacú.
+                    </p>
+                    <span class="day-badge">Iguazú - Maravilla Natural</span>
+                </div>
+
+                <!-- Día 13 -->
+                <div class="day-card" onclick="window.location.href='./dias/13/dia13.html'">
+                    <div class="day-icon">🇧🇷</div>
+                    <div class="day-number">Día 13</div>
+                    <h3 class="day-title">Cruzando a Brasil - Cataratas desde el Otro Lado</h3>
+                    <p class="day-description">
+                        Cruce de frontera, cataratas desde Brasil, vuelo con sorpresas y llegada a Rio de Janeiro.
+                    </p>
+                    <span class="day-badge">Iguazú → Rio - Cruzando Fronteras</span>
+                </div>
+
+                <!-- Día 14 -->
+                <div class="day-card" onclick="window.location.href='./dias/14/dia14.html'">
+                    <div class="day-icon">🗿</div>
+                    <div class="day-number">Día 14</div>
+                    <h3 class="day-title">Rio de Janeiro: Iconos y Playas</h3>
+                    <p class="day-description">
+                        Cristo Redentor, Pan de Azúcar, Escaleras de Selarón, Copacabana y la auténtica Feijoada.
+                    </p>
+                    <span class="day-badge">Rio - Maravillosa Ciudad</span>
+                </div>
+
+                <!-- Día 15 -->
+                <div class="day-card" onclick="window.location.href='./dias/15/dia15.html'">
+                    <div class="day-icon">🏖️</div>
+                    <div class="day-number">Día 15</div>
+                    <h3 class="day-title">Rio a Nuestro Ritmo</h3>
+                    <p class="day-description">
+                        Compras, rodicio tradicional, atardecer en Ipanema y caminatas por la playa.
+                    </p>
+                    <span class="day-badge">Rio - Relajación Brasileña</span>
+                </div>
+
+                <!-- Día 16 -->
+                <div class="day-card" onclick="window.location.href='./dias/16/dia16.html'">
+                    <div class="day-icon">🏘️</div>
+                    <div class="day-number">Día 16</div>
+                    <h3 class="day-title">Paraty: El Pueblo Mágico</h3>
+                    <p class="day-description">
+                        Viaje histórico, posada única, pulpo a la brasa y encuentros con la fauna nocturna.
+                    </p>
+                    <span class="day-badge">Paraty - Magia Rural</span>
+                </div>
+
+                <!-- Día 17 -->
+                <div class="day-card" onclick="window.location.href='./dias/17/dia17.html'">
+                    <div class="day-icon">⛵</div>
+                    <div class="day-number">Día 17</div>
+                    <h3 class="day-title">Tour de Islas: Aventura Marina en Paraty</h3>
+                    <p class="day-description">
+                        Barcos, monos titis, snorkel, jacuzzi y momentos incómodos inolvidables.
+                    </p>
+                    <span class="day-badge">Paraty - Entre Islas</span>
+                </div>
+
+                <!-- Día 18 -->
+                <div class="day-card" onclick="window.location.href='./dias/18/dia18.html'">
+                    <div class="day-icon">🚙</div>
+                    <div class="day-number">Día 18</div>
+                    <h3 class="day-title">Paraty - Última Aventura Terrestre</h3>
+                    <p class="day-description">
+                        Excursión en jeep, cascadas, monos titis y preparativos para el regreso.
+                    </p>
+                    <span class="day-badge">Paraty - Despedidas</span>
+                </div>
+
+                <!-- Día 19 -->
+                <div class="day-card" onclick="window.location.href='./dias/19/dia19.html'">
+                    <div class="day-icon">✈️</div>
+                    <div class="day-number">Día 19</div>
+                    <h3 class="day-title">El Viaje de Regreso a Casa</h3>
+                    <p class="day-description">
+                        De Brasil a Barcelona - 10 horas de vuelo y el retorno a la realidad.
+                    </p>
+                    <span class="day-badge">Brasil → Barcelona</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <h2
+                style="text-align: center; font-family: 'Playfair Display', serif; font-size: 3em; margin-bottom: 60px;">
+                📊 Estadísticas del Viaje
+            </h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">Países Visitados</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">19</div>
+                    <div class="stat-label">Días Documentados</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">18</div>
+                    <div class="stat-label">Horas de Vuelo</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">∞</div>
+                    <div class="stat-label">Recuerdos Creados</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p style="font-size: 1.5em; margin-bottom: 10px;">✈️ 📖 ❤️</p>
+        <p style="font-size: 1.2em;">Diario de Viaje - Argentina y Brasil 2024</p>
+        <p style="opacity: 0.7;">Un viaje para recordar toda la vida</p>
+    </footer>
+
+    <script>
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function (entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInUp 0.6s ease-out forwards';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.day-card').forEach(card => {
+            observer.observe(card);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,27 @@
+Prompt para generar páginas HTML del diario de viaje:"Quiero que generes una página HTML (dia[X].html) para mi diario de viaje con un diseño visual moderno y atractivo.Características del diseño:
+Diseño moderno con gradientes, sombras y animaciones
+Header con título del día, subtítulo y ubicación
+Secciones bien organizadas con iconos temáticos
+Cajas destacadas (highlight-box) para información importante
+Story-box para anécdotas especiales
+Grid de fotos cuando haya múltiples imágenes
+Fotos con efecto polaroid (photo-wrapper) que roten ligeramente
+Citas destacadas en quote-box
+Footer con información del viaje
+Navegación flotante en la esquina inferior derecha con flechas (← 🏠 →) para ir al día anterior, inicio y siguiente
+Responsive y optimizado para impresión
+Fuentes: Playfair Display para títulos, Lato para texto
+Paleta de colores acorde al destino del día
+Estructura:
+Header con gradiente temático
+Secciones divididas por decorative-line
+Texto justificado y bien espaciado
+Highlight-box para datos importantes (vuelos, restaurantes, etc.)
+Story-box para anécdotas divertidas
+Grid de fotos cuando corresponda
+Quote al final con reflexión del día
+Te proporcionaré:
+Texto del día
+Fotos (que dejaré como placeholders para que yo las reemplace)
+Genera el código HTML completo listo para usar."Ejemplo de uso:
+"Genera el día 4 con este texto: [tu texto aquí] y estas fotos: [descripción de fotos]"

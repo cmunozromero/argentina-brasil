@@ -1,0 +1,128 @@
+<!-- DOCUMENTO DE REFERENCIA DE COLORES POR DÍA -->
+
+/*
+PALETTE DE COLORES ASIGNADOS A CADA DÍA DEL VIAJE
+
+Estructura de variables por día:
+--color-primary: Color principal (fondo del header)
+--color-secondary: Color secundario (segundo color del gradiente)
+--color-accent: Color de acentuación (boxes)
+--color-accent-alt: Color alternativo de acentuación
+*/
+
+Día 1 - El Comienzo de la Aventura (Púrpura)
+--color-primary: #667eea
+--color-secondary: #764ba2
+--color-accent: #f093fb
+--color-accent-alt: #f5576c
+
+Día 2 - (Por actualizar)
+--color-primary: #667eea
+--color-secondary: #764ba2
+--color-accent: #667eea
+--color-accent-alt: #764ba2
+
+Día 3 - (Por actualizar)
+--color-primary: #667eea
+--color-secondary: #764ba2
+--color-accent: #667eea
+--color-accent-alt: #764ba2
+
+Día 4 - Excursión 4x4 (Rosa/Naranja)
+--color-primary: #ffafbd
+--color-secondary: #ffc3a0
+--color-accent: #ff6f61
+--color-accent-alt: #ffcc00
+
+Día 5 - Lago Esmeralda (Azul Celeste)
+--color-primary: #00c6ff
+--color-secondary: #0072ff
+--color-accent: #667eea
+--color-accent-alt: #764ba2
+
+Día 6 - Perito Moreno (Rojo)
+--color-primary: #E74C3C
+--color-secondary: #C0392B
+--color-accent: #FADBD8
+--color-accent-alt: #C0392B
+
+Día 7 - Cabalgata (Naranja)
+--color-primary: #f39c12
+--color-secondary: #e67e22
+--color-accent: #ffe0b2
+--color-accent-alt: #ff9800
+
+Día 8 - Cambio de Rumbo (Azul)
+--color-primary: #3498db
+--color-secondary: #2980b9
+--color-accent: #d6eaf8
+--color-accent-alt: #1f618d
+
+Día 9 - Buenos Aires Cultura (Púrpura)
+--color-primary: #9b59b6
+--color-secondary: #8e44ad
+--color-accent: #ebdef0
+--color-accent-alt: #6c3483
+
+Día 10 - Buenos Aires Aventura (Verde Azulado)
+--color-primary: #1abc9c
+--color-secondary: #16a085
+--color-accent: #d5f4e6
+--color-accent-alt: #117a65
+
+Día 11 - Último Día Buenos Aires (Rojo)
+--color-primary: #e74c3c
+--color-secondary: #c0392b
+--color-accent: #fadbd8
+--color-accent-alt: #a93226
+
+Día 12 - Cataratas Iguazú (Azul Oscuro)
+--color-primary: #2980b9
+--color-secondary: #1f618d
+--color-accent: #d6eaf8
+--color-accent-alt: #154360
+
+Día 13 - Cruzando a Brasil (Verde)
+--color-primary: #27ae60
+--color-secondary: #1e8449
+--color-accent: #d5f4e6
+--color-accent-alt: #186a3b
+
+Día 14 - Rio de Janeiro Iconos (Naranja Dorado)
+--color-primary: #f39c12
+--color-secondary: #d68910
+--color-accent: #fdebd0
+--color-accent-alt: #ba4a00
+
+Día 15 - Rio a Nuestro Ritmo (Púrpura)
+--color-primary: #8e44ad
+--color-secondary: #7d3c98
+--color-accent: #ebdef0
+--color-accent-alt: #5b2c6f
+
+Día 16 - Paraty Mágico (Rojo Oscuro)
+--color-primary: #c0392b
+--color-secondary: #a93226
+--color-accent: #fadbd8
+--color-accent-alt: #78281f
+
+Día 17 - Tour de Islas (Verde Azulado)
+--color-primary: #16a085
+--color-secondary: #117a65
+--color-accent: #d5f4e6
+--color-accent-alt: #0e6251
+
+Día 18 - Paraty Aventura Terrestre (Azul)
+--color-primary: #2980b9
+--color-secondary: #1f618d
+--color-accent: #d6eaf8
+--color-accent-alt: #154360
+
+Día 19 - Viaje de Regreso (Púrpura)
+--color-primary: #8e44ad
+--color-secondary: #7d3c98
+--color-accent: #ebdef0
+--color-accent-alt: #5b2c6f
+
+NOTA: Los días 2 y 3 necesitan asignación de colores personalizados.
+      Todos los demás días (4-19) ya tienen colores únicos asignados.

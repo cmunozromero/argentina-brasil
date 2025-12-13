@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diario de Viaje - Día 4 - Excursión 4x4</title>
-      <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../styles.css">
     <style>
         :root {
             /* Colores ajustados a esta página */
@@ -156,23 +156,11 @@
         </div>
     </div>
 
-    <!-- Navegación flotante -->
-    <div style="position: fixed; bottom: 30px; right: 30px; display: flex; gap: 15px; z-index: 999;">
-        <a href="../3/dia3.html"
-            style="background: linear-gradient(135deg, #ffafbd, #ffc3a0); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.5em; box-shadow: 0 5px 20px rgba(0,0,0,0.3); transition: all 0.3s ease;"
-            onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-            ⬅️
-        </a>
-        <a href="../../index.html"
-            style="background: linear-gradient(135deg, #ffafbd, #ffc3a0); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.5em; box-shadow: 0 5px 20px rgba(0,0,0,0.3); transition: all 0.3s ease;"
-            onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-            🏠
-        </a>
-        <a href="../5/dia5.html"
-            style="background: linear-gradient(135deg, #ffafbd, #ffc3a0); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 1.5em; box-shadow: 0 5px 20px rgba(0,0,0,0.3); transition: all 0.3s ease;"
-            onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-            ➡️
-        </a>
+    <!-- Floating Navigation -->
+    <div class="floating-nav">
+        <a href="../3/dia3.html" class="nav-btn" title="Día anterior">⬅️</a>
+        <a href="../../index.html" class="nav-btn" title="Ir al inicio">🏠</a>
+        <a href="../5/dia5.html" class="nav-btn" title="Día siguiente">➡️</a>
     </div>
 </body>
 

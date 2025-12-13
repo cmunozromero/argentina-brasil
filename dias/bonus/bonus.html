@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sorpresa - Día Bonus</title>
+    <style>
+        :root{--bg1:#0f172a;--bg2:#111827;--accent:#ffb86b;--accent2:#7c3aed;--text:#f8fafc}
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:Inter, system-ui, Arial, sans-serif;color:var(--text);background:linear-gradient(180deg,var(--bg1),var(--bg2));}
+        .slide{min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:40px;text-align:center}
+        .dot{font-size:6rem;opacity:0.12;letter-spacing:0.2em;margin-bottom:20px}
+        .hint{font-size:1.6rem;opacity:0.95;max-width:900px}
+        .subtle{opacity:0.6;font-size:1rem;margin-top:12px}
+        .reveal{min-height:140vh;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:60px}
+        .reveal-box{background:linear-gradient(135deg,#ff7a18 0%,#ff3b6b 50%,#7c3aed 100%);color:white;padding:40px;border-radius:20px;box-shadow:0 30px 100px rgba(0,0,0,0.6);transform:translateY(20px);animation:pop 0.8s ease-out forwards}
+        .reveal-box .reveal-image{max-width:720px;width:100%;height:auto;border-radius:12px;display:block;margin:18px auto}
+        .reveal-box .cal-row{display:flex;gap:12px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+        .reveal-box .cal-btn{background:rgba(0,0,0,0.12);color:white;padding:10px 16px;border-radius:10px;text-decoration:none;border:0;cursor:pointer}
+        @keyframes pop{from{opacity:0;transform:translateY(40px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+        .reveal h1{font-size:2.4rem;margin-bottom:8px}
+        .reveal p{font-size:1.4rem}
+        .cta{margin-top:20px;background:rgba(0,0,0,0.12);color:white;padding:12px 18px;border-radius:10px;text-decoration:none;display:inline-block}
+        .confetti{position:fixed;left:0;right:0;top:0;bottom:0;pointer-events:none}
+        .slide:nth-child(odd){background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent)}
+        .slide:nth-child(even){background:linear-gradient(180deg,transparent,rgba(255,255,255,0.01))}
+        .back{position:fixed;left:20px;bottom:20px;background:rgba(255,255,255,0.06);padding:8px 12px;border-radius:8px;color:var(--text);text-decoration:none}
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <div id="confetti" class="confetti"></div>
+    <a class="back" href="../../index.html">← Volver al Diario</a>
+
+    <script>
+        // Generar un scroll muy largo con 'puntos' y mensajes de hype y una pista
+        const container = document.getElementById('container');
+        const total = 120; // aún más secciones para forzar un scroll muy largo
+        const hypeMap = new Map();
+
+        // Mensajes de hype en varios puntos
+        hypeMap.set(5, 'Algo está empezando...');
+        hypeMap.set(14, '¿Lo sientes?');
+        hypeMap.set(23, 'Casi ahí. No te detengas.');
+        hypeMap.set(32, 'Respira. Mantén la curiosidad.');
+        hypeMap.set(41, '¿Listo para la pista?');
+        hypeMap.set(50, 'Muy pronto. Mantén la sonrisa.');
+        hypeMap.set(60, 'Esto se vuelve real.');
+        hypeMap.set(72, 'Un paso más...');
+        hypeMap.set(86, 'Casi en la cima.');
+        hypeMap.set(98, 'Último empujón. Prepárate.');
+        hypeMap.set(105, 'Pista: hubo algo que se nos quedó por hacer en el viaje...');
+
+        for(let i=0;i<total;i++){
+            const slide = document.createElement('section');
+            slide.className = 'slide';
+
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            dot.textContent = '•';
+
+            const hint = document.createElement('div');
+            hint.className = 'hint';
+            hint.textContent = (hypeMap.has(i)) ? hypeMap.get(i) : '...';
+
+            const sub = document.createElement('div');
+            sub.className = 'subtle';
+            sub.textContent = `Desplázate hacia abajo (${i + 1} / ${total})`;
+
+            slide.appendChild(dot);
+            slide.appendChild(hint);
+            slide.appendChild(sub);
+            container.appendChild(slide);
+        }
+
+        // Revelación final
+        const reveal = document.createElement('section');
+        reveal.className = 'reveal';
+
+        const box = document.createElement('div');
+        box.className = 'reveal-box';
+
+        const title = document.createElement('h1');
+        title.textContent = '¡Sorpresa!';
+
+        const message = document.createElement('p');
+        message.innerHTML = 'Tenemos 2 entradas para ver a <strong>Morat</strong> el <strong>17 de Octubre de 2026</strong>.';
+
+        // Imagen del poster dentro de la caja de revelación
+        const revealImg = document.createElement('img');
+        revealImg.src = './image.png';
+        revealImg.alt = 'Morat - Sorpresa';
+        revealImg.className = 'reveal-image';
+
+        const dateNote = document.createElement('p');
+        dateNote.className = 'subtle';
+        dateNote.textContent = 'Prepárate para cantar, viajar y celebrar.';
+
+        const btn = document.createElement('a');
+        btn.className = 'cta';
+        btn.href = '../../index.html';
+        btn.textContent = 'Volver al Diario';
+
+        // Añadir fila de botones para calendario
+        const calRow = document.createElement('div');
+        calRow.className = 'cal-row';
+
+        // const downloadBtn = document.createElement('button');
+        // downloadBtn.className = 'cal-btn';
+        // downloadBtn.id = 'downloadIcs';
+        // downloadBtn.textContent = 'Añadir al calendario (.ics)';
+
+        const gcalLink = document.createElement('a');
+        gcalLink.className = 'cal-btn';
+        gcalLink.target = '_blank';
+        gcalLink.rel = 'noopener';
+        gcalLink.textContent = 'Abrir en Google Calendar';
+
+        // calRow.appendChild(downloadBtn);
+        calRow.appendChild(gcalLink);
+
+        box.appendChild(title);
+        box.appendChild(message);
+        box.appendChild(revealImg);
+        box.appendChild(dateNote);
+        box.appendChild(calRow);
+        box.appendChild(btn);
+        reveal.appendChild(box);
+        container.appendChild(reveal);
+
+        // Datos del evento
+        const event = {
+            title: 'Morat - Concierto',
+            description: 'Concierto de Morat — 17 Oct 2026, 20:00 (hora local)',
+            location: 'Palau Sant Jordi, Barcelona',
+            // Google Calendar uses UTC timestamps ending with Z
+            startUTC: '20261017T180000Z',
+            endUTC: '20261017T200000Z'
+        };
+
+        // Construir enlace a Google Calendar
+        function buildGoogleCalendarUrl(evt){
+            const base = 'https://www.google.com/calendar/render?action=TEMPLATE';
+            const params = [];
+            params.push('text=' + encodeURIComponent(evt.title));
+            params.push('dates=' + evt.startUTC + '/' + evt.endUTC);
+            params.push('details=' + encodeURIComponent(evt.description));
+            params.push('location=' + encodeURIComponent(evt.location));
+            return base + '&' + params.join('&') + '&sf=true&output=xml';
+        }
+
+        // Crear y descargar archivo .ics
+        function downloadIcs(evt){
+            const uid = Date.now() + '@diariodeviaje';
+            const dtstamp = new Date().toISOString().replace(/[-:]/g,'').split('.')[0] + 'Z';
+            const icsLines = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//Diario de Viaje//Morat Event//ES',
+                'BEGIN:VEVENT',
+                'UID:' + uid,
+                'DTSTAMP:' + dtstamp,
+                'DTSTART:' + evt.startUTC,
+                'DTEND:' + evt.endUTC,
+                'SUMMARY:' + evt.title,
+                'LOCATION:' + evt.location,
+                'DESCRIPTION:' + evt.description,
+                'END:VEVENT',
+                'END:VCALENDAR'
+            ].join('\r\n');
+
+            const blob = new Blob([icsLines], {type: 'text/calendar;charset=utf-8'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Morat-20261017.ics';
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 1000);
+        }
+
+        // Asignar eventos a los botones
+        document.getElementById('downloadIcs').addEventListener('click', ()=>downloadIcs(event));
+        document.querySelector('.cal-row a').href = buildGoogleCalendarUrl(event);
+
+        // Simple confetti effect when reveal is in view
+        const confettiRoot = document.getElementById('confetti');
+
+        function spawnConfetti(){
+            for(let i=0;i<160;i++){
+                const el = document.createElement('div');
+                el.style.position = 'absolute';
+                el.style.width = '8px';
+                el.style.height = '12px';
+                el.style.background = `hsl(${Math.random()*360}deg 80% 60%)`;
+                el.style.left = Math.random()*100 + '%';
+                el.style.top = '-10vh';
+                el.style.opacity = 0.95;
+                el.style.transform = `rotate(${Math.random()*360}deg)`;
+                el.style.borderRadius = '2px';
+                el.style.animation = `fall ${4 + Math.random()*4}s linear forwards`;
+                confettiRoot.appendChild(el);
+
+                setTimeout(()=>el.remove(), 10000);
+            }
+        }
+
+        const style = document.createElement('style');
+        style.textContent = `@keyframes fall{to{transform:translateY(110vh) rotate(360deg);opacity:1}}`;
+        document.head.appendChild(style);
+
+        const observer = new IntersectionObserver((entries)=>{
+            entries.forEach(ent=>{
+                if(ent.isIntersecting){
+                    spawnConfetti();
+                }
+            });
+        },{threshold:0.5});
+
+        observer.observe(reveal);
+
+        // Accessibility: allow pressing space to jump down slowly
+        let index = 0;
+        window.addEventListener('keydown', (e)=>{
+            if(e.code === 'Space'){
+                e.preventDefault();
+                index = Math.min(index + 1, total);
+                const target = container.children[index];
+                if(target) target.scrollIntoView({behavior:'smooth'});
+            }
+        });
+    </script>
+</body>
+</html>

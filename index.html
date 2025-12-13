@@ -161,6 +161,7 @@
             margin-bottom: 60px;
         }
 
+
         .day-card {
             background: white;
             border-radius: 20px;
@@ -170,6 +171,17 @@
             cursor: pointer;
             position: relative;
             overflow: hidden;
+        }
+
+        .bonus-card {
+            background: linear-gradient(135deg, #fff7ed 0%, #fff1f0 100%);
+            border: 2px solid rgba(124, 58, 237, 0.08);
+            box-shadow: 0 20px 60px rgba(124, 58, 237, 0.12);
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+            position: relative;
+            overflow: hidden;
+            padding: 40px;
+            border-radius: 20px;
         }
 
         .day-card::before {
@@ -185,8 +197,8 @@
         }
 
         .day-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            transform: translateY(-14px) scale(1.01);
+            box-shadow: 0 30px 90px rgba(124, 58, 237, 0.18);
         }
 
         .day-card:hover::before {
@@ -218,12 +230,22 @@
             position: absolute;
             right: 30px;
             top: 30px;
-            opacity: 0.2;
+            opacity: 0.35;
         }
 
         .day-badge {
             display: inline-block;
             background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .bonus-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff7a18 0%, #ff3b6b 100%);
             color: white;
             padding: 8px 20px;
             border-radius: 20px;
@@ -600,6 +622,15 @@
                         De Brasil a Barcelona - 10 horas de vuelo y el retorno a la realidad.
                     </p>
                     <span class="day-badge">Brasil → Barcelona</span>
+                </div>
+
+                <!-- Día Bonus (sorpresa) -->
+                <div class="day-card bonus-card" onclick="window.location.href='./dias/bonus/bonus.html'">
+                    <div class="day-icon">🎁</div>
+                    <div class="day-number">Día Bonus</div>
+                    <h3 class="day-title">Sorpresa por Llegar</h3>
+                    <p class="day-description">Hay algo especial en camino. ¿Te atreves a descubrirlo?</p>
+                    <span class="bonus-badge">¿Una sorpresa?</span>
                 </div>
             </div>
         </div>

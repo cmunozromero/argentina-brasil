@@ -350,6 +350,89 @@
             opacity: 0.9;
         }
 
+        /* Create Diary CTA Section */
+        .create-diary-section {
+            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 100px 20px;
+            text-align: center;
+        }
+
+        .create-diary-section .cta-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3em;
+            color: #2d3436;
+            margin-bottom: 20px;
+        }
+
+        .create-diary-section .cta-subtitle {
+            font-size: 1.3em;
+            color: #636e72;
+            margin-bottom: 50px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto 60px;
+        }
+
+        .feature-item {
+            background: white;
+            border-radius: 16px;
+            padding: 32px 24px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-6px);
+        }
+
+        .feature-icon {
+            font-size: 2.8em;
+            margin-bottom: 14px;
+        }
+
+        .feature-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2em;
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .feature-desc {
+            color: #636e72;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px 48px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-family: 'Lato', sans-serif;
+            font-size: 1.2em;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 40px rgba(102, 126, 234, 0.5);
+        }
+
         /* Footer */
         .footer {
             background: #2d3436;
@@ -661,6 +744,41 @@
                     <div class="stat-label">Recuerdos Creados</div>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- Create Your Own Diary CTA Section -->
+    <section class="create-diary-section">
+        <div class="container">
+            <h2 class="cta-title">✨ Crea tu Propio Diario de Viaje</h2>
+            <p class="cta-subtitle">
+                ¿Tienes tus propias aventuras para contar? Usa nuestro generador con IA para transformar tus notas y fotos en un diario hermoso como este, exportable a PDF e imágenes.
+            </p>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">🤖</div>
+                    <div class="feature-title">IA que entiende tus fotos</div>
+                    <div class="feature-desc">GPT-4o analiza tus imágenes y las relaciona con tu texto para crear narrativas emotivas y captions perfectos.</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📅</div>
+                    <div class="feature-title">Hasta 60 días de viaje</div>
+                    <div class="feature-desc">Añade cada día con su descripción y fotos. La IA estructura el contenido en secciones, anécdotas y citas reflexivas.</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📄</div>
+                    <div class="feature-title">Exporta a PDF e imágenes</div>
+                    <div class="feature-desc">Descarga tu diario completo en ZIP, imprime páginas individuales como PDF o guárdalas como imágenes.</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🎨</div>
+                    <div class="feature-title">Diseño profesional</div>
+                    <div class="feature-desc">Cada día tiene su paleta de colores única, fotos estilo polaroid, cajas de highlights y navegación flotante.</div>
+                </div>
+            </div>
+            <a href="generar.html" class="cta-button">
+                ✈️ Crear mi diario de viaje
+            </a>
         </div>
     </section>
 

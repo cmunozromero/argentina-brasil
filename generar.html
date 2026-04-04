@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✈️ Generador de Diario de Viaje</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Lato:wght@300;400;700&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"
+        integrity="sha512-XMVd28F1oH/O71fzwBnV7HucLxVwtxf26XV8P4wPk26EDxuGZ91N8bsOttmnomcCD3CS5ZMRL50H0GgOHvegtg=="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+        integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA=="
+        crossorigin="anonymous"></script>
+    <style>
+        /* ===== RESET ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            min-height: 40vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden; padding: 60px 20px;
+        }
+        .hero::before {
+            content: '';
+            position: absolute; width: 200%; height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.08" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,138.7C960,139,1056,117,1152,101.3C1248,85,1344,75,1392,69.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            animation: wave 20s linear infinite; opacity: 0.5;
+        }
+        @keyframes wave { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .hero-content { text-align: center; color: white; z-index: 2; }
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5em; font-weight: 900;
+            margin-bottom: 16px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            line-height: 1.2;
+        }
+        .hero-subtitle {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.8em; margin-bottom: 12px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .hero-desc { font-size: 1.1em; opacity: 0.9; max-width: 600px; margin: 0 auto; }
+
+        /* ===== WIZARD CONTAINER ===== */
+        .wizard-container {
+            max-width: 860px; margin: -30px auto 60px;
+            padding: 0 20px;
+            position: relative; z-index: 10;
+        }
+
+        /* ===== PROGRESS BAR ===== */
+        .steps-progress {
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 28px; padding: 0 20px;
+        }
+        .step-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .step-circle {
+            width: 46px; height: 46px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 1.1em;
+            background: rgba(255,255,255,0.3); color: rgba(255,255,255,0.7);
+            transition: all 0.4s; border: 2px solid rgba(255,255,255,0.3);
+        }
+        .step-item.active .step-circle {
+            background: white; color: #667eea;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            border-color: white;
+        }
+        .step-item.done .step-circle {
+            background: rgba(255,255,255,0.9); color: #43c6ac;
+            border-color: rgba(255,255,255,0.9);
+        }
+        .step-label { font-size: 0.8em; color: rgba(255,255,255,0.7); font-weight: 600; }
+        .step-item.active .step-label { color: white; }
+        .step-connector { flex: 1; height: 2px; background: rgba(255,255,255,0.3); max-width: 80px; margin: 0 8px; margin-bottom: 26px; }
+        .step-connector.done { background: rgba(255,255,255,0.7); }
+
+        /* ===== WIZARD CARD ===== */
+        .wizard-card {
+            background: white; border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            overflow: hidden;
+        }
+        .wizard-step { padding: 44px; display: none; }
+        .wizard-step.active { display: block; }
+
+        /* ===== FORM STYLES ===== */
+        .step-heading {
+            font-family: 'Playfair Display', serif;
+            font-size: 2em; color: #2d3436; margin-bottom: 6px;
+        }
+        .step-subheading { color: #636e72; margin-bottom: 32px; font-size: 1.05em; }
+        .form-group { margin-bottom: 22px; }
+        .form-group label {
+            display: block; font-weight: 700; color: #2d3436;
+            margin-bottom: 7px; font-size: 0.95em;
+        }
+        .form-group label span.required { color: #e17055; margin-left: 3px; }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%; padding: 13px 16px;
+            border: 2px solid #e0e0e0; border-radius: 10px;
+            font-family: 'Lato', sans-serif; font-size: 1em; color: #2d3436;
+            transition: border-color 0.25s; background: #fafafa;
+            resize: vertical;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus { outline: none; border-color: #667eea; background: white; }
+        .form-hint { font-size: 0.85em; color: #b2bec3; margin-top: 5px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .info-banner {
+            background: linear-gradient(135deg, #f0f4ff, #f8f0ff);
+            border-left: 4px solid #667eea;
+            border-radius: 0 10px 10px 0; padding: 16px 20px; margin-bottom: 24px;
+        }
+        .info-banner p { color: #2d3436; font-size: 0.95em; line-height: 1.6; }
+        .info-banner strong { color: #667eea; }
+
+        /* ===== DAY FORM CARDS ===== */
+        .day-form-card {
+            border: 2px solid #ececec; border-radius: 14px;
+            margin-bottom: 14px; overflow: hidden; transition: border-color 0.2s;
+        }
+        .day-form-card:hover { border-color: #c7d0ff; }
+        .day-form-header {
+            display: flex; align-items: center; gap: 14px;
+            padding: 16px 20px; background: #f8f9fa; cursor: pointer;
+            user-select: none; transition: background 0.2s;
+        }
+        .day-form-header:hover { background: #f0f2ff; }
+        .day-num-badge {
+            min-width: 38px; height: 38px; border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; font-weight: 700; font-size: 0.9em;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .day-header-info { flex: 1; min-width: 0; }
+        .day-header-title { font-weight: 700; color: #2d3436; font-size: 0.95em; }
+        .day-header-sub { font-size: 0.83em; color: #b2bec3; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .day-toggle { color: #667eea; font-size: 1.4em; transition: transform 0.3s; }
+        .day-toggle.open { transform: rotate(180deg); }
+        .day-form-body { padding: 24px; display: none; border-top: 2px solid #f0f0f0; }
+        .day-form-body.open { display: block; }
+
+        /* ===== UPLOAD ZONE ===== */
+        .upload-zone {
+            border: 2px dashed #c8c8c8; border-radius: 12px;
+            padding: 30px 20px; text-align: center; cursor: pointer;
+            transition: all 0.3s; color: #999; background: #fafafa;
+        }
+        .upload-zone:hover, .upload-zone.drag-over {
+            border-color: #667eea; color: #667eea; background: #f0f4ff;
+        }
+        .upload-zone input[type="file"] { display: none; }
+        .upload-zone .upload-icon { font-size: 2.5em; margin-bottom: 8px; }
+        .upload-zone p { font-size: 0.95em; }
+        .upload-zone small { font-size: 0.82em; opacity: 0.7; }
+        .photo-previews {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px; margin-top: 16px;
+        }
+        .photo-preview {
+            position: relative; border-radius: 8px;
+            overflow: hidden; aspect-ratio: 1; background: #f0f0f0;
+        }
+        .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .photo-remove {
+            position: absolute; top: 4px; right: 4px;
+            background: rgba(0,0,0,0.65); color: white; border: none;
+            border-radius: 50%; width: 22px; height: 22px; cursor: pointer;
+            font-size: 11px; display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .photo-remove:hover { background: rgba(220,53,69,0.85); }
+        .photo-caption-input {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: rgba(0,0,0,0.5); color: white; font-size: 0.7em;
+            padding: 3px 6px; text-align: center; display: none;
+        }
+        .photo-preview:hover .photo-caption-input { display: block; }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            padding: 14px 32px; border-radius: 30px; border: none;
+            font-family: 'Lato', sans-serif; font-size: 1em; font-weight: 700;
+            cursor: pointer; transition: all 0.3s; display: inline-flex;
+            align-items: center; gap: 8px;
+        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(102,126,234,0.4);
+        }
+        .btn-secondary { background: #f8f9fa; color: #636e72; border: 2px solid #e0e0e0; padding: 12px 30px; }
+        .btn-secondary:hover:not(:disabled) { background: #e9ecef; }
+        .btn-generate {
+            background: linear-gradient(135deg, #43c6ac, #191654);
+            color: white; font-size: 1.1em; padding: 16px 40px;
+        }
+        .btn-generate:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(67,198,172,0.45);
+        }
+        .btn-add-day {
+            width: 100%; padding: 14px; border: 2px dashed #c8c8c8;
+            background: transparent; color: #667eea; border-radius: 12px;
+            font-size: 0.95em; font-weight: 700; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-add-day:hover { border-color: #667eea; background: #f0f4ff; }
+
+        /* ===== WIZARD NAVIGATION ===== */
+        .wizard-nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 44px 30px;
+        }
+        .wizard-nav-right { display: flex; gap: 12px; align-items: center; }
+
+        /* ===== GENERATION MODAL ===== */
+        .gen-modal {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.75); z-index: 1000;
+            align-items: center; justify-content: center;
+        }
+        .gen-modal.active { display: flex; }
+        .gen-card {
+            background: white; border-radius: 24px;
+            padding: 52px 60px; max-width: 480px; width: 90%; text-align: center;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+        }
+        .gen-emoji { font-size: 3.5em; margin-bottom: 16px; }
+        .gen-title { font-family: 'Playfair Display', serif; font-size: 1.8em; color: #2d3436; margin-bottom: 8px; }
+        .gen-spinner {
+            width: 56px; height: 56px; border: 4px solid #ececec;
+            border-top-color: #667eea; border-radius: 50%;
+            animation: spin 0.9s linear infinite; margin: 24px auto;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .gen-progress-bar {
+            height: 8px; background: #ececec; border-radius: 4px;
+            overflow: hidden; margin: 20px 0;
+        }
+        .gen-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            transition: width 0.6s ease; border-radius: 4px;
+        }
+        .gen-status { color: #636e72; font-size: 0.95em; min-height: 24px; }
+
+        /* ===== RESULTS STEP ===== */
+        .result-top {
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 14px; margin-bottom: 24px;
+        }
+        .result-top h2 { font-family: 'Playfair Display', serif; font-size: 1.8em; color: #2d3436; }
+        .export-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn-exp {
+            padding: 10px 22px; border-radius: 20px; border: none;
+            font-family: 'Lato'; font-size: 0.9em; font-weight: 700;
+            cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 6px;
+        }
+        .btn-exp:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.15); }
+        .btn-zip { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-print { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
+        .btn-img { background: linear-gradient(135deg, #43e97b, #38f9d7); color: #1a1a1a; }
+
+        .days-tabs {
+            display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;
+        }
+        .day-tab {
+            padding: 7px 16px; border-radius: 20px; background: #f0f0f0;
+            cursor: pointer; font-size: 0.88em; font-weight: 600;
+            transition: all 0.2s; border: none; font-family: 'Lato';
+        }
+        .day-tab:hover { background: #e0e4ff; color: #667eea; }
+        .day-tab.active { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+
+        .preview-wrapper {
+            border: 2px solid #ececec; border-radius: 14px;
+            overflow: hidden; background: #f8f9fa;
+        }
+        .preview-frame { width: 100%; height: 600px; border: none; display: block; }
+
+        /* ===== ALERT ===== */
+        .alert {
+            padding: 14px 18px; border-radius: 10px; margin-bottom: 20px;
+            font-size: 0.92em; display: none;
+        }
+        .alert.show { display: block; }
+        .alert-error { background: #fff0f0; border-left: 4px solid #e74c3c; color: #c0392b; }
+        .alert-success { background: #f0fff4; border-left: 4px solid #27ae60; color: #1e8449; }
+
+        /* ===== AI PROVIDER CARDS ===== */
+        .provider-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+        .provider-card {
+            border: 2px solid #e0e0e0; border-radius: 14px; padding: 20px 16px;
+            cursor: pointer; transition: all 0.2s; text-align: center;
+        }
+        .provider-card:hover { border-color: #667eea; background: #f8f0ff; }
+        .provider-card.selected { border-color: #667eea; background: #f0f4ff; }
+        .provider-card .prov-icon { font-size: 2.2em; margin-bottom: 8px; }
+        .provider-card .prov-name { font-weight: 700; color: #2d3436; font-size: 1em; }
+        .provider-card .prov-desc { font-size: 0.82em; color: #636e72; margin-top: 4px; }
+
+        /* ===== FOOTER ===== */
+        .page-footer {
+            background: #2d3436; color: white; text-align: center;
+            padding: 32px 20px; font-size: 0.9em;
+        }
+        .page-footer p { margin: 5px 0; opacity: 0.75; }
+        .page-footer a { color: #a29bfe; text-decoration: none; }
+        .page-footer a:hover { text-decoration: underline; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 640px) {
+            .hero-title { font-size: 2.2em; }
+            .wizard-step { padding: 28px 20px; }
+            .wizard-nav { padding: 16px 20px 24px; }
+            .form-row { grid-template-columns: 1fr; }
+            .provider-grid { grid-template-columns: 1fr; }
+            .step-label { display: none; }
+            .gen-card { padding: 36px 28px; }
+            .result-top { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- HERO -->
+    <header class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">✈️ Generador de Diario de Viaje</h1>
+            <p class="hero-subtitle">Transforma tus notas en un diario hermoso</p>
+            <p class="hero-desc">Sube tus fotos, escribe lo que viviste cada día y deja que la IA cree tu diario de viaje completo, exportable a PDF e imágenes.</p>
+        </div>
+    </header>
+
+    <!-- WIZARD -->
+    <div class="wizard-container">
+        <!-- Progress indicator -->
+        <div class="steps-progress">
+            <div class="step-item active" id="prog-1">
+                <div class="step-circle">1</div>
+                <div class="step-label">Información</div>
+            </div>
+            <div class="step-connector" id="conn-1"></div>
+            <div class="step-item" id="prog-2">
+                <div class="step-circle">2</div>
+                <div class="step-label">IA</div>
+            </div>
+            <div class="step-connector" id="conn-2"></div>
+            <div class="step-item" id="prog-3">
+                <div class="step-circle">3</div>
+                <div class="step-label">Días</div>
+            </div>
+            <div class="step-connector" id="conn-3"></div>
+            <div class="step-item" id="prog-4">
+                <div class="step-circle">4</div>
+                <div class="step-label">Resultado</div>
+            </div>
+        </div>
+
+        <!-- Card with steps -->
+        <div class="wizard-card">
+
+            <!-- ======= STEP 1: TRIP INFO ======= -->
+            <div class="wizard-step active" id="step-1">
+                <h2 class="step-heading">📋 Información del Viaje</h2>
+                <p class="step-subheading">Cuéntanos sobre tu aventura. Estos datos aparecerán en la portada y en cada página de tu diario.</p>
+
+                <div class="alert alert-error" id="alert-1"></div>
+
+                <div class="form-group">
+                    <label>Título del viaje <span class="required">*</span></label>
+                    <input type="text" id="trip-title" placeholder="Ej: Aventura por Argentina y Brasil 2025" maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label>Destinos <span class="required">*</span></label>
+                    <input type="text" id="trip-destination" placeholder="Ej: Buenos Aires, Patagonia, Río de Janeiro">
+                    <p class="form-hint">Separa los destinos con comas si visitaste varios lugares.</p>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Número de días <span class="required">*</span></label>
+                        <input type="number" id="trip-days" min="1" max="60" value="7">
+                    </div>
+                    <div class="form-group">
+                        <label>Año del viaje</label>
+                        <input type="text" id="trip-year" placeholder="Ej: 2025" maxlength="4">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Viajeros (separados por coma)</label>
+                    <input type="text" id="trip-participants" placeholder="Ej: María, Carlos">
+                </div>
+                <div class="form-group">
+                    <label>Descripción general del viaje (opcional)</label>
+                    <textarea id="trip-summary" rows="3" placeholder="Un breve resumen de tu experiencia..."></textarea>
+                </div>
+            </div>
+
+            <!-- ======= STEP 2: AI CONFIG ======= -->
+            <div class="wizard-step" id="step-2">
+                <h2 class="step-heading">🤖 Configuración de IA</h2>
+                <p class="step-subheading">La IA analiza tus fotos y mejora tu texto para crear narrativas hermosas y emotivas. También puedes usar el modo sin IA.</p>
+
+                <div class="provider-grid">
+                    <div class="provider-card selected" id="prov-openai" onclick="selectProvider('openai')">
+                        <div class="prov-icon">🧠</div>
+                        <div class="prov-name">OpenAI GPT-4o</div>
+                        <div class="prov-desc">Analiza fotos + texto. Recomendado.</div>
+                    </div>
+                    <div class="provider-card" id="prov-copilot" onclick="selectProvider('copilot')">
+                        <div class="prov-icon">🐙</div>
+                        <div class="prov-name">GitHub Copilot</div>
+                        <div class="prov-desc">Usa tu licencia de GitHub Copilot.</div>
+                    </div>
+                    <div class="provider-card" id="prov-local" onclick="selectProvider('local')">
+                        <div class="prov-icon">⚡</div>
+                        <div class="prov-name">Sin IA (local)</div>
+                        <div class="prov-desc">Formatea tu texto sin IA. Instantáneo.</div>
+                    </div>
+                </div>
+
+                <div id="api-key-section">
+                    <div class="info-banner" id="api-key-info-openai">
+                        <p>🔑 <strong>¿Dónde obtengo mi API key?</strong> Ve a <strong>platform.openai.com</strong> → API Keys → Create new secret key. La clave solo se usa en tu navegador y <strong>no se almacena en ningún servidor</strong>.</p>
+                    </div>
+                    <div class="info-banner" id="api-key-info-copilot" style="display:none">
+                        <p>🐙 <strong>¿Dónde obtengo mi token de GitHub?</strong> Ve a <strong>github.com/settings/tokens</strong> → Generate new token (classic) con permisos de lectura. Compatible con licencias de GitHub Copilot Individual, Business y Enterprise.</p>
+                    </div>
+                    <div class="form-group">
+                        <label id="api-key-label">API Key de OpenAI <span class="required">*</span></label>
+                        <input type="password" id="api-key" placeholder="sk-proj-..." autocomplete="off">
+                        <p class="form-hint">La clave se usa directamente desde tu navegador. No la compartimos con nadie.</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Modelo</label>
+                        <select id="ai-model">
+                            <option value="gpt-4o">GPT-4o (recomendado, analiza fotos)</option>
+                            <option value="gpt-4o-mini">GPT-4o mini (más económico)</option>
+                            <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="info-banner">
+                    <p>📸 <strong>¿Qué hace la IA?</strong> Analiza tus fotos para crear descripciones relacionadas, mejora tu narrativa haciéndola más emotiva y descriptiva, genera secciones temáticas, cajas de datos, anécdotas y frases reflexivas. Todo en español.</p>
+                </div>
+            </div>
+
+            <!-- ======= STEP 3: DAYS ======= -->
+            <div class="wizard-step" id="step-3">
+                <h2 class="step-heading">📅 Los Días de tu Viaje</h2>
+                <p class="step-subheading">Completa la información de cada día. Cuanto más detallado sea tu texto, mejor será el resultado generado.</p>
+
+                <div class="alert alert-error" id="alert-3"></div>
+
+                <div id="days-container">
+                    <!-- Day cards are dynamically injected here -->
+                </div>
+
+                <button class="btn-add-day" onclick="addExtraDay()" id="btn-add-day">
+                    ➕ Añadir día extra
+                </button>
+            </div>
+
+            <!-- ======= STEP 4: RESULTS ======= -->
+            <div class="wizard-step" id="step-4">
+                <div class="result-top">
+                    <h2>🎉 ¡Tu diario está listo!</h2>
+                    <div class="export-btns">
+                        <button class="btn-exp btn-zip" onclick="downloadZip()">
+                            📦 Descargar ZIP
+                        </button>
+                        <button class="btn-exp btn-print" onclick="printCurrentDay()">
+                            🖨️ Imprimir / PDF
+                        </button>
+                        <button class="btn-exp btn-img" onclick="exportCurrentImage()">
+                            🖼️ Guardar imagen
+                        </button>
+                    </div>
+                </div>
+
+                <div class="days-tabs" id="days-tabs">
+                    <!-- Tabs injected dynamically -->
+                </div>
+
+                <div class="preview-wrapper">
+                    <iframe id="preview-frame" class="preview-frame" title="Vista previa del día"></iframe>
+                </div>
+
+                <div style="margin-top: 20px; padding: 16px; background: #f0f4ff; border-radius: 12px; font-size: 0.9em; color: #636e72;">
+                    💡 <strong>Consejo:</strong> Para exportar a PDF, haz clic en "Imprimir / PDF" y en el diálogo de impresión selecciona "Guardar como PDF". El diseño está optimizado para tamaño A4.
+                </div>
+            </div>
+
+        </div><!-- end wizard-card -->
+
+        <!-- Navigation buttons -->
+        <div class="wizard-nav">
+            <button class="btn btn-secondary" id="btn-back" onclick="prevStep()" style="display:none">← Atrás</button>
+            <div class="wizard-nav-right">
+                <button class="btn btn-primary" id="btn-next" onclick="nextStep()">Siguiente →</button>
+                <button class="btn btn-generate" id="btn-generate" onclick="startGeneration()" style="display:none">
+                    ✨ Generar Diario
+                </button>
+            </div>
+        </div>
+    </div><!-- end wizard-container -->
+
+    <!-- GENERATION MODAL -->
+    <div class="gen-modal" id="gen-modal">
+        <div class="gen-card">
+            <div class="gen-emoji">✈️</div>
+            <h2 class="gen-title">Creando tu diario...</h2>
+            <div class="gen-spinner"></div>
+            <div class="gen-progress-bar">
+                <div class="gen-progress-fill" id="gen-progress-fill" style="width:0%"></div>
+            </div>
+            <p class="gen-status" id="gen-status">Iniciando generación...</p>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="page-footer">
+        <p>✈️ Generador de Diario de Viaje</p>
+        <p>Basado en el diseño de <a href="index.html">Diario Argentina y Brasil 2025</a></p>
+    </footer>
+
+<script>
+// ============================================================
+// CONSTANTS
+// ============================================================
+const COLOR_PALETTES = [
+    { primary:'#667eea', secondary:'#764ba2', accent:'#f093fb', altAccent:'#f5576c', emoji:'✈️' },
+    { primary:'#f093fb', secondary:'#f5576c', accent:'#fbc2eb', altAccent:'#a18cd1', emoji:'🌟' },
+    { primary:'#4facfe', secondary:'#00f2fe', accent:'#43e97b', altAccent:'#38f9d7', emoji:'🏔️' },
+    { primary:'#43e97b', secondary:'#38f9d7', accent:'#4facfe', altAccent:'#00f2fe', emoji:'🌿' },
+    { primary:'#f6d365', secondary:'#fda085', accent:'#f093fb', altAccent:'#fa709a', emoji:'☀️' },
+    { primary:'#a18cd1', secondary:'#fbc2eb', accent:'#667eea', altAccent:'#764ba2', emoji:'🌸' },
+    { primary:'#fccb90', secondary:'#d57eeb', accent:'#f093fb', altAccent:'#fa709a', emoji:'🦋' },
+    { primary:'#a1c4fd', secondary:'#c2e9fb', accent:'#4facfe', altAccent:'#00f2fe', emoji:'🌊' },
+    { primary:'#f77062', secondary:'#fe5196', accent:'#fa709a', altAccent:'#fee140', emoji:'🔥' },
+    { primary:'#4481eb', secondary:'#04befe', accent:'#4facfe', altAccent:'#00f2fe', emoji:'💧' },
+    { primary:'#e0c3fc', secondary:'#8ec5fc', accent:'#a18cd1', altAccent:'#fbc2eb', emoji:'🌙' },
+    { primary:'#f9ce34', secondary:'#ee2a7b', accent:'#6228d7', altAccent:'#fa709a', emoji:'🎆' },
+    { primary:'#3a1c71', secondary:'#d76d77', accent:'#ffaf7b', altAccent:'#f093fb', emoji:'🌃' },
+    { primary:'#56ab2f', secondary:'#a8e063', accent:'#43e97b', altAccent:'#96e6a1', emoji:'🌲' },
+    { primary:'#c94b4b', secondary:'#4b134f', accent:'#fa709a', altAccent:'#f093fb', emoji:'🗺️' },
+    { primary:'#00b09b', secondary:'#96c93d', accent:'#43e97b', altAccent:'#d4fc79', emoji:'🌴' },
+    { primary:'#fd746c', secondary:'#ff9068', accent:'#fa709a', altAccent:'#fee140', emoji:'🎉' },
+    { primary:'#6a3093', secondary:'#a044ff', accent:'#e0c3fc', altAccent:'#8ec5fc', emoji:'🔮' },
+    { primary:'#1a1a2e', secondary:'#16213e', accent:'#0f3460', altAccent:'#e94560', emoji:'🌌' },
+    { primary:'#f7971e', secondary:'#ffd200', accent:'#f6d365', altAccent:'#fda085', emoji:'🌞' },
+];
+
+const SYSTEM_PROMPT = `Eres un escritor profesional de diarios de viaje. Transformas notas personales de viaje en narrativas hermosas, emotivas y detalladas en español.
+
+Analiza el texto del día y las fotos proporcionadas, y devuelve ÚNICAMENTE un JSON válido con esta estructura exacta (sin texto adicional, sin markdown, solo el JSON):
+{
+  "sections": [
+    {
+      "title": "Título temático corto (máximo 5 palabras)",
+      "icon": "emoji relevante al contenido de la sección",
+      "paragraphs": ["párrafo narrativo de 2-4 oraciones detalladas", "párrafo adicional si es necesario"]
+    }
+  ],
+  "highlightBox": {
+    "title": "emoji + Título breve",
+    "items": ["Dato o hecho importante 1", "Dato importante 2", "Dato importante 3"]
+  },
+  "storyBox": {
+    "title": "emoji + Título de la anécdota o momento especial",
+    "content": "Una anécdota divertida, emotiva o memorable narrada en 3-5 oraciones"
+  },
+  "quote": "Una frase reflexiva poética que capture la esencia o el sentimiento del día",
+  "photoCaptions": ["caption descriptivo y emotivo para foto 1", "caption para foto 2"]
+}
+
+Instrucciones:
+- Crea entre 2 y 3 secciones temáticas. Si el texto es corto, crea 2 secciones.
+- Escribe en primera persona. El tono debe ser personal, cálido y evocador.
+- Incluye detalles sensoriales: colores, sabores, olores, sonidos, emociones.
+- Si hay fotos, analízalas y relaciónalas con el contenido del texto. Genera tantos captions como fotos haya.
+- El highlightBox debe contener datos concretos del día (lugares, actividades, comidas, transportes, precios si los hay).
+- La quote debe ser una frase original que resuma el espíritu del día.`;
+
+// ============================================================
+// STATE
+// ============================================================
+let currentStep = 1;
+const TOTAL_STEPS = 4;
+
+const appState = {
+    tripInfo: {},
+    aiConfig: { provider: 'openai', apiKey: '', model: 'gpt-4o' },
+    days: [],           // [{title, subtitle, description, photos:[{name, dataUrl}]}]
+    generatedPages: [], // [{dayIndex, htmlContent, blobUrl}]
+    currentPreview: 0,
+};
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function nextStep() {
+    if (currentStep === 1 && !validateStep1()) return;
+    if (currentStep === 2 && !validateStep2()) return;
+    if (currentStep < TOTAL_STEPS) {
+        if (currentStep === 1) collectStep1();
+        if (currentStep === 2) collectStep2();
+        if (currentStep === 2) initDayForms();
+        goToStep(currentStep + 1);
+    }
+}
+
+function prevStep() {
+    if (currentStep > 1) goToStep(currentStep - 1);
+}
+
+function goToStep(n) {
+    document.getElementById(`step-${currentStep}`).classList.remove('active');
+    document.getElementById(`prog-${currentStep}`).classList.remove('active');
+    document.getElementById(`prog-${currentStep}`).classList.add('done');
+
+    currentStep = n;
+    document.getElementById(`step-${currentStep}`).classList.add('active');
+    document.getElementById(`prog-${currentStep}`).classList.remove('done');
+    document.getElementById(`prog-${currentStep}`).classList.add('active');
+
+    // Update connectors
+    for (let i = 1; i < TOTAL_STEPS; i++) {
+        const conn = document.getElementById(`conn-${i}`);
+        if (conn) conn.classList.toggle('done', i < currentStep);
+    }
+
+    // Update buttons
+    document.getElementById('btn-back').style.display = currentStep > 1 ? 'flex' : 'none';
+    document.getElementById('btn-next').style.display = (currentStep < TOTAL_STEPS - 1) ? 'flex' : 'none';
+    document.getElementById('btn-generate').style.display = (currentStep === 3) ? 'flex' : 'none';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ============================================================
+// VALIDATION & COLLECTION
+// ============================================================
+function showAlert(id, msg) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 5000);
+}
+
+function validateStep1() {
+    const title = document.getElementById('trip-title').value.trim();
+    const dest = document.getElementById('trip-destination').value.trim();
+    const days = parseInt(document.getElementById('trip-days').value) || 0;
+    if (!title) { showAlert('alert-1', 'Por favor, escribe el título del viaje.'); return false; }
+    if (!dest) { showAlert('alert-1', 'Por favor, escribe el destino del viaje.'); return false; }
+    if (days < 1 || days > 60) { showAlert('alert-1', 'El número de días debe estar entre 1 y 60.'); return false; }
+    return true;
+}
+
+function collectStep1() {
+    appState.tripInfo = {
+        title: document.getElementById('trip-title').value.trim(),
+        destination: document.getElementById('trip-destination').value.trim(),
+        totalDays: parseInt(document.getElementById('trip-days').value),
+        year: document.getElementById('trip-year').value.trim(),
+        participants: document.getElementById('trip-participants').value.trim(),
+        summary: document.getElementById('trip-summary').value.trim(),
+    };
+}
+
+function validateStep2() {
+    // API key is optional: if absent, generation will fall back to local mode.
+    // Step 2 has no dedicated alert element; we simply allow proceeding.
+    return true;
+}
+
+function collectStep2() {
+    let provider = 'local';
+    if (document.getElementById('prov-openai').classList.contains('selected')) provider = 'openai';
+    else if (document.getElementById('prov-copilot').classList.contains('selected')) provider = 'copilot';
+    appState.aiConfig = {
+        provider,
+        apiKey: document.getElementById('api-key').value.trim(),
+        model: document.getElementById('ai-model').value,
+    };
+}
+
+// ============================================================
+// PROVIDER SELECTION
+// ============================================================
+function selectProvider(prov) {
+    document.getElementById('prov-openai').classList.toggle('selected', prov === 'openai');
+    document.getElementById('prov-copilot').classList.toggle('selected', prov === 'copilot');
+    document.getElementById('prov-local').classList.toggle('selected', prov === 'local');
+    const hasKey = prov === 'openai' || prov === 'copilot';
+    document.getElementById('api-key-section').style.display = hasKey ? 'block' : 'none';
+    document.getElementById('api-key-info-openai').style.display = prov === 'openai' ? 'block' : 'none';
+    document.getElementById('api-key-info-copilot').style.display = prov === 'copilot' ? 'block' : 'none';
+    const label = document.getElementById('api-key-label');
+    if (prov === 'copilot') {
+        label.innerHTML = 'Token de GitHub <span class="required">*</span>';
+        document.getElementById('api-key').placeholder = 'ghp_... o github_pat_...';
+    } else {
+        label.innerHTML = 'API Key de OpenAI <span class="required">*</span>';
+        document.getElementById('api-key').placeholder = 'sk-proj-...';
+    }
+    // Update model options based on provider
+    const modelSelect = document.getElementById('ai-model');
+    if (prov === 'copilot') {
+        modelSelect.innerHTML = `
+            <option value="gpt-4o">GPT-4o (recomendado, analiza fotos)</option>
+            <option value="gpt-4o-mini">GPT-4o mini (más económico)</option>
+            <option value="Meta-Llama-3.1-70B-Instruct">Meta Llama 3.1 70B</option>
+        `;
+    } else {
+        modelSelect.innerHTML = `
+            <option value="gpt-4o">GPT-4o (recomendado, analiza fotos)</option>
+            <option value="gpt-4o-mini">GPT-4o mini (más económico)</option>
+            <option value="gpt-4-turbo">GPT-4 Turbo</option>
+        `;
+    }
+}
+
+// ============================================================
+// DAY FORMS
+// ============================================================
+function initDayForms() {
+    const n = appState.tripInfo.totalDays;
+    // Preserve existing day data if re-entering step 3
+    while (appState.days.length < n) {
+        appState.days.push({ title: '', subtitle: '', description: '', photos: [] });
+    }
+    renderDayForms();
+}
+
+function renderDayForms() {
+    const container = document.getElementById('days-container');
+    container.innerHTML = '';
+    appState.days.forEach((day, i) => renderDayCard(i));
+}
+
+function renderDayCard(i) {
+    const container = document.getElementById('days-container');
+    const palette = COLOR_PALETTES[i % COLOR_PALETTES.length];
+    const day = appState.days[i];
+
+    const card = document.createElement('div');
+    card.className = 'day-form-card';
+    card.id = `day-card-${i}`;
+
+    card.innerHTML = `
+        <div class="day-form-header" onclick="toggleDay(${i})">
+            <div class="day-num-badge" style="background:linear-gradient(135deg,${palette.primary},${palette.secondary})">${i+1}</div>
+            <div class="day-header-info">
+                <div class="day-header-title" id="day-header-title-${i}">Día ${i+1}${day.title ? ' — ' + escapeHtml(day.title) : ''}</div>
+                <div class="day-header-sub" id="day-header-sub-${i}">${day.subtitle || 'Sin ubicación aún'} · ${day.photos.length} foto(s)</div>
+            </div>
+            <div class="day-toggle" id="day-toggle-${i}">▼</div>
+        </div>
+        <div class="day-form-body" id="day-body-${i}">
+            <div class="form-group">
+                <label>Título del día</label>
+                <input type="text" id="day-title-${i}" value="${escapeHtml(day.title)}" placeholder="Ej: El Comienzo de la Aventura" maxlength="80"
+                    onchange="updateDayMeta(${i})">
+            </div>
+            <div class="form-group">
+                <label>Ubicación / Subtítulo</label>
+                <input type="text" id="day-subtitle-${i}" value="${escapeHtml(day.subtitle)}" placeholder="Ej: De Madrid a Buenos Aires"
+                    onchange="updateDayMeta(${i})">
+            </div>
+            <div class="form-group">
+                <label>¿Qué viviste este día? <span class="required">*</span></label>
+                <textarea id="day-desc-${i}" rows="6"
+                    placeholder="Describe lo que hiciste, viste, comiste, sentiste... Cuanto más detallado, mejor será el resultado. La IA mejorará tu texto y lo convertirá en una narrativa emotiva.">${escapeHtml(day.description)}</textarea>
+                <p class="form-hint">Escribe en tu idioma natural. No te preocupes por el estilo, la IA se encargará.</p>
+            </div>
+            <div class="form-group">
+                <label>Fotos del día</label>
+                <div class="upload-zone" id="upload-zone-${i}"
+                    onclick="document.getElementById('file-input-${i}').click()"
+                    ondragover="handleDragOver(event,${i})"
+                    ondragleave="handleDragLeave(event,${i})"
+                    ondrop="handleDrop(event,${i})">
+                    <input type="file" id="file-input-${i}" multiple accept="image/*"
+                        onchange="handleFileInput(event,${i})">
+                    <div class="upload-icon">📷</div>
+                    <p>Arrastra tus fotos aquí o haz clic para seleccionar</p>
+                    <small>JPG, PNG, WEBP · Múltiples archivos permitidos</small>
+                </div>
+                <div class="photo-previews" id="photo-previews-${i}"></div>
+            </div>
+        </div>`;
+
+    container.appendChild(card);
+
+    // Auto-open first day
+    if (i === 0) toggleDay(0);
+
+    // Re-render existing photos
+    renderPhotoPreviews(i);
+}
+
+function addExtraDay() {
+    appState.days.push({ title: '', subtitle: '', description: '', photos: [] });
+    const i = appState.days.length - 1;
+    renderDayCard(i);
+    toggleDay(i);
+    document.getElementById(`day-card-${i}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function toggleDay(i) {
+    const body = document.getElementById(`day-body-${i}`);
+    const toggle = document.getElementById(`day-toggle-${i}`);
+    body.classList.toggle('open');
+    toggle.classList.toggle('open');
+}
+
+function updateDayMeta(i) {
+    const title = document.getElementById(`day-title-${i}`).value.trim();
+    const subtitle = document.getElementById(`day-subtitle-${i}`).value.trim();
+    appState.days[i].title = title;
+    appState.days[i].subtitle = subtitle;
+    const hTitle = document.getElementById(`day-header-title-${i}`);
+    const hSub = document.getElementById(`day-header-sub-${i}`);
+    hTitle.textContent = `Día ${i+1}${title ? ' — ' + title : ''}`;
+    hSub.textContent = `${subtitle || 'Sin ubicación aún'} · ${appState.days[i].photos.length} foto(s)`;
+}
+
+// ============================================================
+// PHOTO HANDLING
+// ============================================================
+function handleDragOver(e, i) {
+    e.preventDefault();
+    document.getElementById(`upload-zone-${i}`).classList.add('drag-over');
+}
+function handleDragLeave(e, i) {
+    document.getElementById(`upload-zone-${i}`).classList.remove('drag-over');
+}
+function handleDrop(e, i) {
+    e.preventDefault();
+    document.getElementById(`upload-zone-${i}`).classList.remove('drag-over');
+    processFiles(Array.from(e.dataTransfer.files), i);
+}
+function handleFileInput(e, i) {
+    processFiles(Array.from(e.target.files), i);
+    e.target.value = ''; // allow re-selecting same files
+}
+
+async function processFiles(files, i) {
+    const imageFiles = files.filter(f => f.type.startsWith('image/'));
+    for (const file of imageFiles) {
+        const dataUrl = await fileToBase64(file);
+        appState.days[i].photos.push({ name: file.name, dataUrl });
+    }
+    renderPhotoPreviews(i);
+    updateDayMeta(i);
+}
+
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+function renderPhotoPreviews(i) {
+    const container = document.getElementById(`photo-previews-${i}`);
+    if (!container) return;
+    container.innerHTML = '';
+    appState.days[i].photos.forEach((photo, j) => {
+        const div = document.createElement('div');
+        div.className = 'photo-preview';
+        div.innerHTML = `
+            <img src="${photo.dataUrl}" alt="${escapeHtml(photo.name)}" loading="lazy">
+            <button class="photo-remove" onclick="removePhoto(${i},${j})" title="Eliminar foto">✕</button>`;
+        container.appendChild(div);
+    });
+}
+
+function removePhoto(dayIdx, photoIdx) {
+    appState.days[dayIdx].photos.splice(photoIdx, 1);
+    renderPhotoPreviews(dayIdx);
+    updateDayMeta(dayIdx);
+}
+
+// ============================================================
+// GENERATION
+// ============================================================
+async function startGeneration() {
+    // Collect current day form data
+    collectDayForms();
+
+    const hasContent = appState.days.some(d => d.description.trim().length > 0 || d.photos.length > 0);
+    if (!hasContent) {
+        showAlert('alert-3', 'Por favor, añade al menos una descripción o foto en algún día.');
+        return;
+    }
+
+    // Show modal
+    const modal = document.getElementById('gen-modal');
+    modal.classList.add('active');
+    setGenProgress(0, 'Preparando generación...');
+
+    appState.generatedPages = [];
+
+    try {
+        const total = appState.days.length;
+        for (let i = 0; i < total; i++) {
+            const pct = Math.round((i / total) * 90);
+            setGenProgress(pct, `Generando día ${i+1} de ${total}...`);
+            const aiContent = await generateDayContent(appState.days[i], i);
+            const html = buildDayHTML(appState.days[i], aiContent, i, total, appState.tripInfo);
+            const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+            const blobUrl = URL.createObjectURL(blob);
+            appState.generatedPages.push({ dayIndex: i, htmlContent: html, blobUrl });
+        }
+
+        setGenProgress(95, 'Construyendo portada...');
+        await new Promise(r => setTimeout(r, 300));
+
+        setGenProgress(100, '¡Diario completado!');
+        await new Promise(r => setTimeout(r, 600));
+
+        modal.classList.remove('active');
+        buildResultsStep();
+        goToStep(4);
+
+    } catch (err) {
+        modal.classList.remove('active');
+        showAlert('alert-3', `Error al generar: ${err.message || err}. Prueba el modo Sin IA.`);
+        console.error(err);
+    }
+}
+
+function collectDayForms() {
+    appState.days.forEach((day, i) => {
+        const titleEl = document.getElementById(`day-title-${i}`);
+        const subEl = document.getElementById(`day-subtitle-${i}`);
+        const descEl = document.getElementById(`day-desc-${i}`);
+        if (titleEl) day.title = titleEl.value.trim();
+        if (subEl) day.subtitle = subEl.value.trim();
+        if (descEl) day.description = descEl.value.trim();
+    });
+}
+
+function setGenProgress(pct, msg) {
+    document.getElementById('gen-progress-fill').style.width = pct + '%';
+    document.getElementById('gen-status').textContent = msg;
+}
+
+// ============================================================
+// AI CONTENT GENERATION
+// ============================================================
+async function generateDayContent(day, dayIndex) {
+    if (appState.aiConfig.provider === 'local' || !appState.aiConfig.apiKey) {
+        return generateLocalContent(day, dayIndex);
+    }
+    try {
+        if (appState.aiConfig.provider === 'copilot') {
+            return await callGitHubModels(day, dayIndex);
+        }
+        return await callOpenAI(day, dayIndex);
+    } catch (err) {
+        console.warn(`AI failed for day ${dayIndex+1}, falling back to local:`, err.message);
+        return generateLocalContent(day, dayIndex);
+    }
+}
+
+async function callOpenAI(day, dayIndex) {
+    const apiKey = appState.aiConfig.apiKey;
+    const model = appState.aiConfig.model || 'gpt-4o';
+
+    const userPrompt = buildUserPrompt(day, dayIndex);
+
+    const msgContent = [{ type: 'text', text: userPrompt }];
+
+    // Resize and attach photos (max 4 for cost)
+    const photosToSend = day.photos.slice(0, 4);
+    for (const photo of photosToSend) {
+        try {
+            const resized = await resizeImageForAI(photo.dataUrl, 768);
+            msgContent.push({
+                type: 'image_url',
+                image_url: { url: resized, detail: 'low' }
+            });
+        } catch (e) {
+            console.warn('Could not resize photo:', e);
+        }
+    }
+
+    const body = {
+        model,
+        messages: [
+            { role: 'system', content: SYSTEM_PROMPT },
+            { role: 'user', content: msgContent }
+        ],
+        max_tokens: 2000,
+        response_format: { type: 'json_object' },
+        temperature: 0.8,
+    };
+
+    const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify(body),
+    });
+
+    if (!resp.ok) {
+        const errData = await resp.json().catch(() => ({}));
+        throw new Error(errData.error?.message || `OpenAI API error ${resp.status}`);
+    }
+
+    const data = await resp.json();
+    const raw = data.choices?.[0]?.message?.content || '{}';
+    return JSON.parse(raw);
+}
+
+async function callGitHubModels(day, dayIndex) {
+    const apiKey = appState.aiConfig.apiKey;
+    const model = appState.aiConfig.model || 'gpt-4o';
+
+    const userPrompt = buildUserPrompt(day, dayIndex);
+    const msgContent = [{ type: 'text', text: userPrompt }];
+
+    // Only vision-capable models support image_url content
+    const VISION_MODELS = ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-4-vision-preview'];
+    const supportsVision = VISION_MODELS.includes(model);
+    if (supportsVision) {
+        const photosToSend = day.photos.slice(0, 4);
+        for (const photo of photosToSend) {
+            try {
+                const resized = await resizeImageForAI(photo.dataUrl, 768);
+                msgContent.push({
+                    type: 'image_url',
+                    image_url: { url: resized, detail: 'low' }
+                });
+            } catch (e) {
+                console.warn('Could not resize photo:', e);
+            }
+        }
+    }
+
+    const body = {
+        model,
+        messages: [
+            { role: 'system', content: SYSTEM_PROMPT },
+            { role: 'user', content: supportsVision ? msgContent : userPrompt }
+        ],
+        max_tokens: 2000,
+        response_format: { type: 'json_object' },
+        temperature: 0.8,
+    };
+
+    const resp = await fetch('https://models.inference.ai.azure.com/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify(body),
+    });
+
+    if (!resp.ok) {
+        const errData = await resp.json().catch(() => ({}));
+        throw new Error(errData.error?.message || `GitHub Models API error ${resp.status}`);
+    }
+
+    const data = await resp.json();
+    const raw = data.choices?.[0]?.message?.content || '{}';
+    return JSON.parse(raw);
+}
+
+function buildUserPrompt(day, dayIndex) {
+    const { tripInfo } = appState;
+    return `Día ${dayIndex+1} del viaje "${tripInfo.title}" por ${tripInfo.destination}.
+
+Título del día: ${day.title || `Día ${dayIndex+1}`}
+Ubicación: ${day.subtitle || tripInfo.destination}
+Viajeros: ${tripInfo.participants || 'no especificado'}
+
+Texto del viajero:
+${day.description || '(Sin descripción proporcionada para este día)'}
+
+Fotos adjuntas: ${day.photos.length}. Genera exactamente ${day.photos.length} captions en el array "photoCaptions". Si no hay fotos, deja "photoCaptions" como array vacío [].`;
+}
+
+function generateLocalContent(day, dayIndex) {
+    const raw = day.description || `Un día maravilloso en ${appState.tripInfo.destination}.`;
+    const paras = raw.split(/\n+/).map(p => p.trim()).filter(p => p.length > 10);
+
+    const mid = Math.ceil(paras.length / 2);
+    const sections = [];
+
+    if (paras.length === 0) {
+        sections.push({ title: day.title || `Día ${dayIndex+1}`, icon: '📖', paragraphs: [raw] });
+    } else {
+        sections.push({
+            title: day.title || `El Día ${dayIndex+1}`,
+            icon: '📖',
+            paragraphs: paras.slice(0, mid),
+        });
+        if (paras.length > mid) {
+            sections.push({
+                title: 'Más Momentos',
+                icon: '✨',
+                paragraphs: paras.slice(mid),
+            });
+        }
+    }
+
+    return {
+        sections,
+        highlightBox: {
+            title: `📍 Resumen del Día ${dayIndex+1}`,
+            items: [
+                `Destino: ${day.subtitle || appState.tripInfo.destination}`,
+                `${day.photos.length} foto(s) capturada(s)`,
+                'Un día lleno de momentos únicos',
+            ],
+        },
+        storyBox: {
+            title: '✨ El Momento Especial del Día',
+            content: paras[paras.length - 1] || raw,
+        },
+        quote: 'Cada día de viaje escribe una nueva página en el libro de los recuerdos.',
+        photoCaptions: day.photos.map((_, j) => `📸 Recuerdo del día ${dayIndex+1} · Foto ${j+1}`),
+    };
+}
+
+// ============================================================
+// IMAGE UTILS
+// ============================================================
+async function resizeImageForAI(dataUrl, maxDim) {
+    return new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => {
+            const scale = Math.min(maxDim / img.width, maxDim / img.height, 1);
+            const w = Math.round(img.width * scale);
+            const h = Math.round(img.height * scale);
+            const canvas = document.createElement('canvas');
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL('image/jpeg', 0.82));
+        };
+        img.onerror = () => resolve(dataUrl);
+        img.src = dataUrl;
+    });
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#39;');
+}
+
+// ============================================================
+// HTML GENERATION
+// ============================================================
+function buildDayHTML(day, aiContent, dayIndex, totalDays, tripInfo) {
+    const palette = COLOR_PALETTES[dayIndex % COLOR_PALETTES.length];
+    const dayNum = dayIndex + 1;
+    const prevHref = dayIndex > 0 ? `../dia${dayNum-1}/dia${dayNum-1}.html` : null;
+    const nextHref = dayIndex < totalDays-1 ? `../dia${dayNum+1}/dia${dayNum+1}.html` : null;
+
+    // Distribute photos across sections
+    let photosUsed = 0;
+    const photoCaptions = aiContent.photoCaptions || [];
+
+    const sectionsHTML = (aiContent.sections || []).map((section, sIdx) => {
+        const photosForSection = day.photos.slice(photosUsed, photosUsed + 2);
+        const startIdx = photosUsed;
+        photosUsed += photosForSection.length;
+
+        let photosHTML = '';
+        if (photosForSection.length === 1) {
+            const caption = photoCaptions[startIdx] || '';
+            photosHTML = `
+        <div class="photo-container">
+          <div class="photo-wrapper">
+            <img src="${photosForSection[0].dataUrl}" alt="${escapeHtml(section.title)}" style="max-height:420px;object-fit:cover;">
+          </div>
+          <p class="photo-caption">📸 ${escapeHtml(caption)}</p>
+        </div>`;
+        } else if (photosForSection.length >= 2) {
+            photosHTML = `
+        <div class="grid-photos">
+          ${photosForSection.map((p, k) => `
+          <div class="grid-item">
+            <img src="${p.dataUrl}" alt="${escapeHtml(section.title)} ${k+1}">
+            <p>📸 ${escapeHtml(photoCaptions[startIdx+k] || `Foto ${startIdx+k+1}`)}</p>
+          </div>`).join('')}
+        </div>`;
+        }
+
+        const sep = sIdx < (aiContent.sections.length - 1) ? '<div class="decorative-line"></div>' : '';
+
+        return `
+      <div class="section">
+        <h2 class="section-title">
+          <span class="icon">${section.icon || '📌'}</span>
+          ${escapeHtml(section.title)}
+        </h2>
+        <div class="text-content">
+          ${(section.paragraphs || []).map(p => `<p>${escapeHtml(p)}</p>`).join('')}
+        </div>
+        ${photosHTML}
+      </div>
+      ${sep}`;
+    }).join('');
+
+    // Remaining photos
+    const remaining = day.photos.slice(photosUsed);
+    const remainingHTML = remaining.length > 0 ? `
+      <div class="decorative-line"></div>
+      <div class="section">
+        <div class="grid-photos">
+          ${remaining.map((p, k) => `
+          <div class="grid-item">
+            <img src="${p.dataUrl}" alt="Foto ${photosUsed+k+1}">
+            <p>📸 ${escapeHtml(photoCaptions[photosUsed+k] || `Foto ${photosUsed+k+1}`)}</p>
+          </div>`).join('')}
+        </div>
+      </div>` : '';
+
+    const hb = aiContent.highlightBox || { title: '📋 Datos del Día', items: [] };
+    const sb = aiContent.storyBox || { title: '✨ Anécdota', content: '' };
+    const quote = aiContent.quote || 'Un día para recordar.';
+
+    const css = getDiaryCss(palette);
+
+    return `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${escapeHtml(tripInfo.title)} - Día ${dayNum}</title>
+  <style>${css}</style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <h1>${palette.emoji} Día ${dayNum}</h1>
+      <div class="subtitle">${escapeHtml(day.title || `Día ${dayNum}`)}</div>
+      <div class="date">${escapeHtml(day.subtitle || tripInfo.destination)}</div>
+    </div>
+    <div class="content">
+      ${sectionsHTML}
+      ${remainingHTML}
+      <div class="decorative-line"></div>
+      <div class="highlight-box">
+        <h3>${escapeHtml(hb.title)}</h3>
+        ${(hb.items||[]).map(item => `<p>• ${escapeHtml(item)}</p>`).join('')}
+      </div>
+      <div class="story-box">
+        <h3>${escapeHtml(sb.title)}</h3>
+        <p>${escapeHtml(sb.content)}</p>
+      </div>
+      <div class="decorative-line"></div>
+      <div class="quote">"${escapeHtml(quote)}"</div>
+    </div>
+    <div class="footer">
+      <p>📖 ${escapeHtml(tripInfo.title)}${tripInfo.year ? ' ' + escapeHtml(tripInfo.year) : ''}</p>
+      <p>Día ${dayNum} de ${totalDays} ✨</p>
+    </div>
+  </div>
+  <div class="floating-nav">
+    ${prevHref ? `<a href="${prevHref}" class="nav-btn" title="Día anterior">⬅️</a>` : ''}
+    <a href="../../index.html" class="nav-btn" title="Portada">🏠</a>
+    ${nextHref ? `<a href="${nextHref}" class="nav-btn" title="Día siguiente">➡️</a>` : ''}
+  </div>
+</body>
+</html>`;
+}
+
+function buildIndexHTML() {
+    const { tripInfo, days } = appState;
+    const palette = COLOR_PALETTES[0];
+
+    const dayCards = days.map((day, i) => {
+        const p = COLOR_PALETTES[i % COLOR_PALETTES.length];
+        return `
+      <div class="day-card" onclick="window.location.href='./dias/dia${i+1}/dia${i+1}.html'">
+        <div class="day-icon">${p.emoji}</div>
+        <div class="day-number">Día ${i+1}</div>
+        <h3 class="day-title">${escapeHtml(day.title || `Día ${i+1}`)}</h3>
+        <p class="day-description">${escapeHtml(day.subtitle || tripInfo.destination)}</p>
+        <span class="day-badge" style="background:linear-gradient(135deg,${p.primary},${p.secondary})">Ver día →</span>
+      </div>`;
+    }).join('');
+
+    return `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${escapeHtml(tripInfo.title)}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Lato:wght@300;400;700&family=Dancing+Script:wght@700&display=swap');
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Lato',sans-serif;overflow-x:hidden}
+    .hero{min-height:100vh;background:linear-gradient(135deg,${palette.primary} 0%,${palette.secondary} 50%,${palette.accent} 100%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:40px 20px}
+    .hero-content{text-align:center;color:white;z-index:2}
+    .hero-title{font-family:'Playfair Display',serif;font-size:4em;font-weight:900;margin-bottom:20px;text-shadow:3px 3px 6px rgba(0,0,0,.3);line-height:1.2}
+    .hero-sub{font-family:'Dancing Script',cursive;font-size:2em;margin-bottom:16px}
+    .hero-emoji{font-size:3.5em;margin-bottom:20px}
+    .days-section{background:linear-gradient(180deg,#f8f9fa 0%,#e9ecef 100%);padding:80px 20px}
+    .container{max-width:1400px;margin:0 auto}
+    .sec-title{text-align:center;font-family:'Playfair Display',serif;font-size:3em;color:#2d3436;margin-bottom:60px}
+    .days-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:30px}
+    .day-card{background:white;border-radius:20px;padding:36px;box-shadow:0 10px 40px rgba(0,0,0,.1);transition:all .3s;cursor:pointer;position:relative;overflow:hidden}
+    .day-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:5px;background:linear-gradient(90deg,${palette.primary},${palette.secondary});transform:scaleX(0);transition:transform .3s}
+    .day-card:hover{transform:translateY(-10px);box-shadow:0 20px 60px rgba(0,0,0,.2)}
+    .day-card:hover::before{transform:scaleX(1)}
+    .day-icon{font-size:3em;position:absolute;right:20px;top:20px;opacity:.3}
+    .day-number{font-family:'Playfair Display',serif;font-size:2.5em;color:${palette.primary};margin-bottom:10px}
+    .day-title{font-family:'Playfair Display',serif;font-size:1.4em;color:#2d3436;margin-bottom:10px}
+    .day-description{color:#636e72;line-height:1.6;margin-bottom:16px;font-size:.95em}
+    .day-badge{display:inline-block;color:white;padding:6px 16px;border-radius:20px;font-size:.85em;font-weight:700}
+    footer{background:#2d3436;color:white;text-align:center;padding:40px 20px;font-size:.9em}
+    footer p{margin:6px 0;opacity:.8}
+    @media(max-width:768px){.hero-title{font-size:2.5em}.days-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-emoji">${palette.emoji}</div>
+      <h1 class="hero-title">${escapeHtml(tripInfo.title)}</h1>
+      <p class="hero-sub">Un viaje de ${days.length} días${tripInfo.year ? ' · ' + escapeHtml(tripInfo.year) : ''}</p>
+      ${tripInfo.participants ? `<p style="color:rgba(255,255,255,.85);font-size:1.1em">👥 ${escapeHtml(tripInfo.participants)}</p>` : ''}
+    </div>
+  </div>
+  <section class="days-section">
+    <div class="container">
+      <h2 class="sec-title">📅 Los Días del Viaje</h2>
+      <div class="days-grid">${dayCards}</div>
+    </div>
+  </section>
+  <footer>
+    <p>📖 ${escapeHtml(tripInfo.title)}</p>
+    ${tripInfo.participants ? `<p>Viajeros: ${escapeHtml(tripInfo.participants)}</p>` : ''}
+    <p>Generado con ❤️ — Diario de Viaje</p>
+  </footer>
+</body>
+</html>`;
+}
+
+// ============================================================
+// EMBEDDED CSS FOR GENERATED PAGES
+// ============================================================
+function getDiaryCss(palette) {
+    return `@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap');
+:root{
+  --font-serif:'Playfair Display',serif;--font-sans:'Lato',sans-serif;
+  --fs-h1:3.5em;--fs-h2:2em;--fs-h3:1.5em;--fs-subtitle:1.5em;--fs-body:1.1em;--fs-small:.9em;
+  --spacing-xs:10px;--spacing-sm:15px;--spacing-md:20px;--spacing-lg:30px;--spacing-xl:50px;--spacing-2xl:60px;
+  --radius-sm:5px;--radius-md:10px;--radius-lg:15px;--radius-full:50%;
+  --shadow-sm:0 3px 10px rgba(0,0,0,.1);--shadow-md:0 5px 20px rgba(0,0,0,.2);--shadow-lg:0 10px 30px rgba(0,0,0,.2);--shadow-xl:0 20px 60px rgba(0,0,0,.3);
+  --color-white:white;--color-black:#2d3436;--color-text:#333;--color-text-light:#666;--color-bg-light:#f8f9fa;
+  --color-primary:${palette.primary};--color-secondary:${palette.secondary};
+  --color-accent:${palette.accent};--color-accent-alt:${palette.altAccent};
+  --header-content:'${palette.emoji}';
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-sans);background:linear-gradient(135deg,var(--color-primary) 0%,var(--color-secondary) 100%);padding:20px;line-height:1.6}
+.page{max-width:1200px;margin:0 auto;background:var(--color-white);box-shadow:var(--shadow-xl);border-radius:var(--radius-lg);overflow:hidden}
+.header{background:linear-gradient(135deg,var(--color-primary) 0%,var(--color-secondary) 100%);color:var(--color-white);padding:60px 50px;text-align:center;position:relative;overflow:hidden}
+.header::before{content:var(--header-content,'🌍');position:absolute;font-size:200px;opacity:.1;top:-50px;right:-50px;transform:rotate(-15deg)}
+.header h1{font-family:var(--font-serif);font-size:var(--fs-h1);margin-bottom:15px;text-shadow:2px 2px 4px rgba(0,0,0,.3)}
+.header .subtitle{font-size:var(--fs-subtitle);font-weight:300;font-style:italic}
+.header .date{margin-top:20px;font-size:1.2em;background:rgba(255,255,255,.2);display:inline-block;padding:10px 30px;border-radius:25px;backdrop-filter:blur(10px)}
+.floating-nav{position:fixed;bottom:30px;right:30px;display:flex;gap:15px;z-index:999}
+.nav-btn{background:linear-gradient(135deg,var(--color-primary),var(--color-secondary));color:var(--color-white);width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:1.5em;box-shadow:var(--shadow-md);transition:all .3s}
+.nav-btn:hover{transform:scale(1.1)}
+.content{padding:50px}
+.section{margin-bottom:50px}
+.section-title{font-family:var(--font-serif);font-size:var(--fs-h2);color:var(--color-primary);margin-bottom:20px;padding-bottom:10px;border-bottom:3px solid var(--color-primary);display:flex;align-items:center;gap:15px}
+.section-title .icon{font-size:1.2em}
+.text-content{font-size:var(--fs-body);color:var(--color-text);margin-bottom:30px;text-align:justify;line-height:1.8}
+.text-content p{margin-bottom:15px}
+.photo-container{margin:30px 0;text-align:center}
+.photo-wrapper{display:block;background:var(--color-white);padding:15px;box-shadow:var(--shadow-lg);border-radius:var(--radius-md);transform:rotate(-1deg);transition:transform .3s;max-width:17cm;margin:0 auto}
+.photo-wrapper:hover{transform:rotate(0) scale(1.02)}
+.photo-wrapper img{width:100%;height:auto;display:block;border-radius:var(--radius-sm)}
+.photo-caption{margin-top:15px;font-style:italic;color:var(--color-text-light);font-size:var(--fs-small);padding:0 20px}
+.grid-photos{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:30px;margin:30px 0}
+.grid-item{background:var(--color-white);padding:15px;box-shadow:var(--shadow-md);border-radius:var(--radius-md);transition:transform .3s}
+.grid-item:hover{transform:translateY(-5px)}
+.grid-item img{width:100%;height:280px;object-fit:cover;border-radius:var(--radius-sm);margin-bottom:15px}
+.grid-item p{font-size:var(--fs-small);color:var(--color-text-light);text-align:center;font-style:italic}
+.highlight-box{background:linear-gradient(135deg,var(--color-accent) 0%,var(--color-accent-alt) 100%);color:var(--color-white);padding:30px;border-radius:var(--radius-md);margin:30px 0;box-shadow:var(--shadow-md)}
+.highlight-box h3{font-family:var(--font-serif);font-size:var(--fs-h3);margin-bottom:15px}
+.highlight-box p{margin:6px 0;line-height:1.7}
+.story-box{background:rgba(255,107,107,.1);border-left:5px solid var(--color-accent-alt);padding:30px;margin:30px 0;border-radius:0 var(--radius-md) var(--radius-md) 0;box-shadow:var(--shadow-sm)}
+.story-box h3{font-family:var(--font-serif);color:var(--color-accent-alt);font-size:var(--fs-h3);margin-bottom:15px}
+.story-box p{color:var(--color-text);line-height:1.8}
+.quote{background:var(--color-bg-light);border-left:5px solid var(--color-primary);padding:30px 50px;margin:40px 0;font-style:italic;font-size:1.2em;color:#555;border-radius:0 var(--radius-md) var(--radius-md) 0}
+.decorative-line{height:2px;background:linear-gradient(90deg,transparent,var(--color-primary),transparent);margin:40px 0}
+.footer{background:var(--color-black);color:var(--color-white);text-align:center;padding:30px;font-size:var(--fs-small)}
+.footer p{margin:10px 0}
+@media(max-width:768px){
+  .header h1{font-size:2em}.content{padding:30px 20px}.section-title{font-size:1.5em}
+  .grid-photos{grid-template-columns:1fr}.floating-nav{bottom:15px;right:15px;gap:8px}
+  .nav-btn{width:45px;height:45px;font-size:18px}
+}
+@media print{
+  body{background:white;padding:0}.page{box-shadow:none;max-width:18cm;margin:0 auto;border-radius:0}
+  .photo-wrapper,.grid-item{max-width:17cm;page-break-inside:avoid}
+  .photo-wrapper img,.grid-item img{width:100%;height:auto}
+  .header,.footer{page-break-after:avoid}.floating-nav{display:none!important}
+}`;
+}
+
+// ============================================================
+// RESULTS STEP
+// ============================================================
+function buildResultsStep() {
+    const tabs = document.getElementById('days-tabs');
+    tabs.innerHTML = '';
+    appState.generatedPages.forEach((page, i) => {
+        const day = appState.days[i];
+        const btn = document.createElement('button');
+        btn.className = `day-tab${i === 0 ? ' active' : ''}`;
+        btn.textContent = `Día ${i+1}${day.title ? ': ' + day.title.substring(0,18) : ''}`;
+        btn.onclick = () => previewDay(i);
+        tabs.appendChild(btn);
+    });
+
+    // Add index tab
+    const idxBtn = document.createElement('button');
+    idxBtn.className = 'day-tab';
+    idxBtn.textContent = '🏠 Portada';
+    idxBtn.onclick = previewIndex;
+    tabs.appendChild(idxBtn);
+
+    previewDay(0);
+}
+
+function previewDay(i) {
+    document.querySelectorAll('.day-tab').forEach((t, ti) => t.classList.toggle('active', ti === i));
+    appState.currentPreview = i;
+    const frame = document.getElementById('preview-frame');
+    frame.src = appState.generatedPages[i].blobUrl;
+}
+
+function previewIndex() {
+    document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.day-tab')[appState.generatedPages.length].classList.add('active');
+    const html = buildIndexHTML();
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    document.getElementById('preview-frame').src = URL.createObjectURL(blob);
+}
+
+// ============================================================
+// EXPORT: PDF
+// ============================================================
+function printCurrentDay() {
+    const i = appState.currentPreview;
+    if (appState.generatedPages.length === 0) return;
+    const page = appState.generatedPages[Math.min(i, appState.generatedPages.length - 1)];
+    const w = window.open('', '_blank');
+    w.document.write(page.htmlContent);
+    w.document.close();
+    // Wait for the new window's content to fully render before triggering print
+    const PRINT_DELAY_MS = 800;
+    setTimeout(() => w.print(), PRINT_DELAY_MS);
+}
+
+// ============================================================
+// EXPORT: IMAGE via html2canvas
+// ============================================================
+async function exportCurrentImage() {
+    const i = appState.currentPreview;
+    if (appState.generatedPages.length === 0) return;
+    const page = appState.generatedPages[Math.min(i, appState.generatedPages.length - 1)];
+    const day = appState.days[Math.min(i, appState.days.length - 1)];
+
+    // Render in a hidden div positioned at top-left (off-screen via left offset)
+    // Using position:absolute avoids the html2canvas fixed-positioning black-render bug
+    const tmp = document.createElement('div');
+    tmp.style.cssText = 'position:absolute;left:-9999px;top:0;width:900px;z-index:-1;';
+    tmp.innerHTML = page.htmlContent;
+    document.body.appendChild(tmp);
+
+    // Wait for images to load
+    await Promise.all(Array.from(tmp.querySelectorAll('img')).map(img =>
+        img.complete ? Promise.resolve() : new Promise(r => { img.onload = r; img.onerror = r; })
+    ));
+
+    try {
+        const canvas = await html2canvas(tmp.querySelector('.page') || tmp, {
+            scale: 1.5,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
+            scrollX: 0,
+            scrollY: 0,
+            windowWidth: 900,
+            logging: false,
+        });
+        const link = document.createElement('a');
+        link.download = `dia${i+1}${day.title ? '-' + day.title.toLowerCase().replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-') : ''}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    } finally {
+        document.body.removeChild(tmp);
+    }
+}
+
+// ============================================================
+// EXPORT: ZIP
+// ============================================================
+async function downloadZip() {
+    if (appState.generatedPages.length === 0) return;
+    const zip = new JSZip();
+    const tripSlug = (appState.tripInfo.title || 'mi-diario').toLowerCase().replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-').substring(0,40);
+    const folder = zip.folder(tripSlug);
+
+    // index.html
+    folder.file('index.html', buildIndexHTML());
+
+    // Day pages
+    appState.generatedPages.forEach((page, i) => {
+        const dayFolder = folder.folder(`dias/dia${i+1}`);
+        dayFolder.file(`dia${i+1}.html`, page.htmlContent);
+    });
+
+    // README
+    folder.file('LEEME.txt',
+`DIARIO DE VIAJE - ${appState.tripInfo.title}
+Generado el ${new Date().toLocaleDateString('es-ES')}
+
+Cómo usar:
+1. Abre index.html en tu navegador para ver la portada con todos los días
+2. Cada día está en: dias/diaN/diaN.html
+3. Para exportar a PDF: abre el día en el navegador y usa Ctrl+P → Guardar como PDF
+
+Los archivos HTML son completamente autocontenidos (incluyen estilos e imágenes).
+`);
+
+    const content = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(content);
+    link.download = `${tripSlug}.zip`;
+    link.click();
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+    // Set current year as default
+    const yearEl = document.getElementById('trip-year');
+    if (yearEl && !yearEl.value) yearEl.value = new Date().getFullYear().toString();
+
+    // Initial button state
+    document.getElementById('btn-back').style.display = 'none';
+    document.getElementById('btn-generate').style.display = 'none';
+});
+</script>
+</body>
+</html>

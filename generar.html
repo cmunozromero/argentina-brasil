@@ -309,7 +309,7 @@
         .alert-success { background: #f0fff4; border-left: 4px solid #27ae60; color: #1e8449; }
 
         /* ===== AI PROVIDER CARDS ===== */
-        .provider-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+        .provider-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 24px; }
         .provider-card {
             border: 2px solid #e0e0e0; border-radius: 14px; padding: 20px 16px;
             cursor: pointer; transition: all 0.2s; text-align: center;
@@ -428,6 +428,11 @@
                         <div class="prov-name">OpenAI GPT-4o</div>
                         <div class="prov-desc">Analiza fotos + texto. Recomendado.</div>
                     </div>
+                    <div class="provider-card" id="prov-copilot" onclick="selectProvider('copilot')">
+                        <div class="prov-icon">🐙</div>
+                        <div class="prov-name">GitHub Copilot</div>
+                        <div class="prov-desc">Usa tu licencia de GitHub Copilot.</div>
+                    </div>
                     <div class="provider-card" id="prov-local" onclick="selectProvider('local')">
                         <div class="prov-icon">⚡</div>
                         <div class="prov-name">Sin IA (local)</div>
@@ -436,11 +441,14 @@
                 </div>
 
                 <div id="api-key-section">
-                    <div class="info-banner">
+                    <div class="info-banner" id="api-key-info-openai">
                         <p>🔑 <strong>¿Dónde obtengo mi API key?</strong> Ve a <strong>platform.openai.com</strong> → API Keys → Create new secret key. La clave solo se usa en tu navegador y <strong>no se almacena en ningún servidor</strong>.</p>
                     </div>
+                    <div class="info-banner" id="api-key-info-copilot" style="display:none">
+                        <p>🐙 <strong>¿Dónde obtengo mi token de GitHub?</strong> Ve a <strong>github.com/settings/tokens</strong> → Generate new token (classic) con permisos de lectura. Compatible con licencias de GitHub Copilot Individual, Business y Enterprise.</p>
+                    </div>
                     <div class="form-group">
-                        <label>API Key de OpenAI <span class="required">*</span></label>
+                        <label id="api-key-label">API Key de OpenAI <span class="required">*</span></label>
                         <input type="password" id="api-key" placeholder="sk-proj-..." autocomplete="off">
                         <p class="form-hint">La clave se usa directamente desde tu navegador. No la compartimos con nadie.</p>
                     </div>
@@ -690,8 +698,11 @@ function validateStep2() {
 }
 
 function collectStep2() {
+    let provider = 'local';
+    if (document.getElementById('prov-openai').classList.contains('selected')) provider = 'openai';
+    else if (document.getElementById('prov-copilot').classList.contains('selected')) provider = 'copilot';
     appState.aiConfig = {
-        provider: document.getElementById('prov-openai').classList.contains('selected') ? 'openai' : 'local',
+        provider,
         apiKey: document.getElementById('api-key').value.trim(),
         model: document.getElementById('ai-model').value,
     };
@@ -702,8 +713,35 @@ function collectStep2() {
 // ============================================================
 function selectProvider(prov) {
     document.getElementById('prov-openai').classList.toggle('selected', prov === 'openai');
+    document.getElementById('prov-copilot').classList.toggle('selected', prov === 'copilot');
     document.getElementById('prov-local').classList.toggle('selected', prov === 'local');
-    document.getElementById('api-key-section').style.display = prov === 'openai' ? 'block' : 'none';
+    const hasKey = prov === 'openai' || prov === 'copilot';
+    document.getElementById('api-key-section').style.display = hasKey ? 'block' : 'none';
+    document.getElementById('api-key-info-openai').style.display = prov === 'openai' ? 'block' : 'none';
+    document.getElementById('api-key-info-copilot').style.display = prov === 'copilot' ? 'block' : 'none';
+    const label = document.getElementById('api-key-label');
+    if (prov === 'copilot') {
+        label.innerHTML = 'Token de GitHub <span class="required">*</span>';
+        document.getElementById('api-key').placeholder = 'ghp_... o github_pat_...';
+    } else {
+        label.innerHTML = 'API Key de OpenAI <span class="required">*</span>';
+        document.getElementById('api-key').placeholder = 'sk-proj-...';
+    }
+    // Update model options based on provider
+    const modelSelect = document.getElementById('ai-model');
+    if (prov === 'copilot') {
+        modelSelect.innerHTML = `
+            <option value="gpt-4o">GPT-4o (recomendado, analiza fotos)</option>
+            <option value="gpt-4o-mini">GPT-4o mini (más económico)</option>
+            <option value="Meta-Llama-3.1-70B-Instruct">Meta Llama 3.1 70B</option>
+        `;
+    } else {
+        modelSelect.innerHTML = `
+            <option value="gpt-4o">GPT-4o (recomendado, analiza fotos)</option>
+            <option value="gpt-4o-mini">GPT-4o mini (más económico)</option>
+            <option value="gpt-4-turbo">GPT-4 Turbo</option>
+        `;
+    }
 }
 
 // ============================================================
@@ -943,6 +981,9 @@ async function generateDayContent(day, dayIndex) {
         return generateLocalContent(day, dayIndex);
     }
     try {
+        if (appState.aiConfig.provider === 'copilot') {
+            return await callGitHubModels(day, dayIndex);
+        }
         return await callOpenAI(day, dayIndex);
     } catch (err) {
         console.warn(`AI failed for day ${dayIndex+1}, falling back to local:`, err.message);
@@ -995,6 +1036,61 @@ async function callOpenAI(day, dayIndex) {
     if (!resp.ok) {
         const errData = await resp.json().catch(() => ({}));
         throw new Error(errData.error?.message || `OpenAI API error ${resp.status}`);
+    }
+
+    const data = await resp.json();
+    const raw = data.choices?.[0]?.message?.content || '{}';
+    return JSON.parse(raw);
+}
+
+async function callGitHubModels(day, dayIndex) {
+    const apiKey = appState.aiConfig.apiKey;
+    const model = appState.aiConfig.model || 'gpt-4o';
+
+    const userPrompt = buildUserPrompt(day, dayIndex);
+    const msgContent = [{ type: 'text', text: userPrompt }];
+
+    // Only vision-capable models support image_url content
+    const VISION_MODELS = ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-4-vision-preview'];
+    const supportsVision = VISION_MODELS.includes(model);
+    if (supportsVision) {
+        const photosToSend = day.photos.slice(0, 4);
+        for (const photo of photosToSend) {
+            try {
+                const resized = await resizeImageForAI(photo.dataUrl, 768);
+                msgContent.push({
+                    type: 'image_url',
+                    image_url: { url: resized, detail: 'low' }
+                });
+            } catch (e) {
+                console.warn('Could not resize photo:', e);
+            }
+        }
+    }
+
+    const body = {
+        model,
+        messages: [
+            { role: 'system', content: SYSTEM_PROMPT },
+            { role: 'user', content: supportsVision ? msgContent : userPrompt }
+        ],
+        max_tokens: 2000,
+        response_format: { type: 'json_object' },
+        temperature: 0.8,
+    };
+
+    const resp = await fetch('https://models.inference.ai.azure.com/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify(body),
+    });
+
+    if (!resp.ok) {
+        const errData = await resp.json().catch(() => ({}));
+        throw new Error(errData.error?.message || `GitHub Models API error ${resp.status}`);
     }
 
     const data = await resp.json();
@@ -1411,9 +1507,10 @@ async function exportCurrentImage() {
     const page = appState.generatedPages[Math.min(i, appState.generatedPages.length - 1)];
     const day = appState.days[Math.min(i, appState.days.length - 1)];
 
-    // Render in a hidden div
+    // Render in a hidden div positioned at top-left (off-screen via left offset)
+    // Using position:absolute avoids the html2canvas fixed-positioning black-render bug
     const tmp = document.createElement('div');
-    tmp.style.cssText = 'position:fixed;left:-9999px;top:0;width:900px;visibility:hidden;';
+    tmp.style.cssText = 'position:absolute;left:-9999px;top:0;width:900px;z-index:-1;';
     tmp.innerHTML = page.htmlContent;
     document.body.appendChild(tmp);
 
@@ -1424,7 +1521,14 @@ async function exportCurrentImage() {
 
     try {
         const canvas = await html2canvas(tmp.querySelector('.page') || tmp, {
-            scale: 1.5, useCORS: true, backgroundColor: null,
+            scale: 1.5,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
+            scrollX: 0,
+            scrollY: 0,
+            windowWidth: 900,
+            logging: false,
         });
         const link = document.createElement('a');
         link.download = `dia${i+1}${day.title ? '-' + day.title.toLowerCase().replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-') : ''}.png`;
